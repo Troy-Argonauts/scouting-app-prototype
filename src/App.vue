@@ -1,6 +1,7 @@
 <template>
   <v-app>
     <v-main>
+        <ScoutingForm />
         <v-textarea
             v-model="content"
             style="width:100%"
@@ -23,6 +24,7 @@ import {
 import {
     useDebounce,
 } from '@vueuse/core'
+import ScoutingForm from './components/ScoutingForm.vue';
 
 function onQrScan (msg: string) {
     content.value = msg;

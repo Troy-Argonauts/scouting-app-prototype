@@ -9,5 +9,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     QRCodeScanner: typeof import('./src/components/QRCodeScanner.vue')['default']
+    ScoutingForm: typeof import('./src/components/ScoutingForm.vue')['default']
   }
 }
