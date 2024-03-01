@@ -320,6 +320,8 @@ const qrContent = computed(() => {
 })
 
 function resetValues () {
-    values.value = {}
+    if (confirm('Are you sure you want to reset all values?')) {
+        values.value = {}
+    }
 }
 </script>
