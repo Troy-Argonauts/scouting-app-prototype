@@ -3,16 +3,25 @@
         <v-text-field
             v-if="field.type === 'num'"
             :label="field.label"
+            :hint="field.hint"
             type="number"
         />
         <v-text-field
             v-else-if="field.type === 'str'"
             :label="field.label"
+            :hint="field.hint"
         />
         <v-select
             v-else-if="field.type === 'select'"
             :label="field.label"
+            :hint="field.hint"
             :items="field.options || []"    
+        />
+        <v-banner
+            v-else-if="field.type === 'header'"
+            class="text-h5"
+            sticky
+            :text="field.label"
         />
     </template>
 </template>
@@ -23,7 +32,8 @@ import { reactive } from 'vue'
 type FormField = {
     id: string;
     label: string;
-    type: 'str' | 'num' | 'select';
+    type: 'str' | 'num' | 'select' | 'header';
+    hint?: string;
     options?: string[]; // only if `type: 'select'`
 }
 
@@ -54,6 +64,11 @@ const fields: FormField[] = [
         type: 'num',
     },
     {
+        id: 'headerAuton',
+        label: 'Auton',
+        type: 'header',
+    },
+    {
         id: 'startingPosition',
         label: 'Starting Position',
         type: 'select',
@@ -73,17 +88,20 @@ const fields: FormField[] = [
     },
     {
         id: 'ampAuton',
-        label: 'Amp: S score | M miss',
+        label: 'Amp',
+        hint: 'S score | M miss',
         type: 'str',
     },
     {
         id: 'speakerAuton',
-        label: 'Speaker: S score | M miss',
+        label: 'Speaker',
+        hint: 'S score | M miss',
         type: 'str',
     },
     {
         id: 'wingPickupAuton',
-        label: 'Speaker: S score | M miss',
+        label: 'Speaker',
+        hint: 'S score | M miss',
         type: 'str',
     },
     {
@@ -93,13 +111,19 @@ const fields: FormField[] = [
         options: ['yes', 'no'],
     },
     {
+        id: 'headerTeleop',
+        label: 'Teleop',
+        type: 'header',
+    },
+    {
         id: 'teleopAmp',
         label: 'Amp',
         type: 'str',
     },
     {
         id: 'teleopSpeaker',
-        label: 'Speaker: N not amplified | A amplified',
+        label: 'Speaker',
+        hint: 'N not amplified | A amplified',
         type: 'str',
     },
     {
@@ -115,17 +139,26 @@ const fields: FormField[] = [
         options: ['yes','no']
     },
     {
+        id: 'headerEndgame',
+        label: 'End Game',
+        type: 'header',
+    },
+    {
         id: 'onstagePark',
         label: 'Onstage/Park',
         type: 'select',
         options: ['alone', 'park', 'none', 'w/ 1', 'w/ 2'],
-
     },
     {
         id: 'onstagePosition',
         label: 'Onstage Position',
         type: 'select',
         options: ['none', 'left', 'center', 'right'],
+    },
+    {
+        id: 'headerAttrs',
+        label: 'Attributes',
+        type: 'header',
     },
     {
         id:'pickupLocation',
