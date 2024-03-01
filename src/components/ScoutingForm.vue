@@ -233,37 +233,31 @@ const fields: FormField[] = [
         id: 'ampScoreAuton',
         label: 'Amp Scores',
         type: 'counter',
-        cols: 6,
     },
     {
         id: 'ampMissAuton',
         label: 'Amp Misses',
         type: 'counter',
-        cols: 6,
     },
     {
         id: 'speakerScoreAuton',
         label: 'Speaker Scores',
         type: 'counter',
-        cols: 6,
     },
     {
         id: 'speakerMissAuton',
         label: 'Speaker Misses',
         type: 'counter',
-        cols: 6,
     },
     {
         id: 'wingScoreAuton',
         label: 'Wing Scores',
         type: 'counter',
-        cols: 6,
     },
     {
         id: 'wingMissAuton',
         label: 'Wing Misses',
         type: 'counter',
-        cols: 6,
     },
     {
         id: 'autonBreakdown',
