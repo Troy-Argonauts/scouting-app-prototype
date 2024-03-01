@@ -1,4 +1,9 @@
 <template>
+    <v-btn class="mb-2" block color="green" @click="resetValues">
+        <v-icon class="mr-2">mdi-reload</v-icon>
+        Reset Values
+    </v-btn>
+
     <template v-for="field of fields">
         <v-text-field
             v-if="field.type === 'num'"
@@ -41,6 +46,23 @@
             </li>
         </ul>
     </v-alert>
+
+    <br>
+
+    <v-textarea
+        v-model="qrContent"
+        style="width:100%"
+        label="QR Code Content"
+    />
+
+    <v-btn color="blue" block @click="copyContent(qrContent)">
+        <v-icon class="mr-2">mdi-clipboard</v-icon>
+        Copy to clipboard
+    </v-btn>
+
+    <qr-code
+        :contents="qrContent"
+    />
 </template>
 
 <script setup lang="ts">
@@ -51,6 +73,8 @@ import {
 } from 'vue'
 import {
     useDebounce,
+    useClipboard,
+    useLocalStorage,
 } from '@vueuse/core'
 
 type FormField = {
@@ -61,9 +85,9 @@ type FormField = {
     options?: string[]; // only if `type: 'select'`
 }
 
-const values = reactive<{
+const values = useLocalStorage<{
     [id: string]: string;
-}>({})
+}>('idk', {});
 
 function convertValuesToCode (v: typeof values): string {
     // stub
@@ -205,10 +229,22 @@ const fields: FormField[] = [
 
 ];
 
-const debouncedValues = useDebounce(computed(() => ({ ...values })), 500)
+const debouncedValues = useDebounce(computed(() => ({ ...values.value })), 500)
 
 const missingFields = computed(() => {
-    return fields.filter(field => !debouncedValues.value[field.id]);
+    return fields.filter(field => !debouncedValues.value[field.id] && field.type !== 'header');
 })
 
+const qrContent = computed(() => {
+    return fields.map(field => {
+        const fieldValue = debouncedValues.value[field.id] || ''
+        return fieldValue;
+    }).join('\t')
+})
+
+const { copy: copyContent } = useClipboard({ source: qrContent })
+
+function resetValues () {
+    values.value = {}
+}
 </script>

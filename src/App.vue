@@ -15,13 +15,6 @@
                             <v-window v-model="mode">
                                 <v-window-item value="entry">
                                     <ScoutingForm />
-                                    <v-textarea
-                                        v-model="content"
-                                        style="width:100%"
-                                    />
-                                    <qr-code
-                                        :contents="debouncedContent"
-                                    />
                                 </v-window-item>
                                 <v-window-item value="scan">
                                     <QRCodeScanner
