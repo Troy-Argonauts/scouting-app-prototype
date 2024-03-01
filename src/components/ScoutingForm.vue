@@ -18,11 +18,22 @@
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue'
+
 type FormField = {
     id: string;
     label: string;
     type: 'str' | 'num' | 'select';
     options?: string[]; // only if `type: 'select'`
+}
+
+const values = reactive<{
+    [id: string]: string;
+}>({})
+
+function convertValuesToCode (v: typeof values): string {
+    // stub
+    // needs to implement the process used in the excel sheet
 }
 
 const fields: FormField[] = [
