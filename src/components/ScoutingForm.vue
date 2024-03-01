@@ -20,6 +20,7 @@
                     append-icon="mdi-close-circle"
                     @click:append="values[field.id] = ''"
                 />
+
                 <v-text-field
                     v-else-if="field.type === 'str'"
                     v-model="values[field.id]"
@@ -28,6 +29,7 @@
                     append-icon="mdi-close-circle"
                     @click:append="values[field.id] = ''"
                 />
+
                 <v-select
                     v-else-if="field.type === 'select'"
                     v-model="values[field.id]"
@@ -37,6 +39,7 @@
                     append-icon="mdi-close-circle"
                     @click:append="values[field.id] = ''"
                 />
+
                 <div
                     v-else-if="field.type === 'header'"
                     class="text-h5"
@@ -72,6 +75,19 @@
                     :hint="field.hint"
                     :true-value="field.trueValue"
                     :false-value="field.falseValue"
+                />
+
+                <v-text-field
+                    v-else-if="field.type === 'charCount'"
+                    v-model="values[field.id]"
+                    :label="field.label"
+                    :hint="field.hint"
+                    append-icon="mdi-plus-circle"
+                    prepend-icon="mdi-minus-circle"
+                    counter
+                    persistent-counter
+                    @click:append="values[field.id] = (values[field.id] || '') + 'x'"
+                    @click:prepend="values[field.id] = (values[field.id] || '').slice(0, -1)"
                 />
             </v-col>
         </v-row>
@@ -128,6 +144,8 @@ type FormField = {
     type: 'checkbox';
     trueValue: string;
     falseValue: string;
+} | {
+    type: 'charCount';
 })
 
 const values = useLocalStorage<{
@@ -198,7 +216,7 @@ const fields: FormField[] = [
         label: 'Amp',
         hint: 'any character',
         allowEmpty: true,
-        type: 'str',
+        type: 'charCount',
     },
     {
         id: 'speakerAuton',
@@ -229,7 +247,7 @@ const fields: FormField[] = [
     {
         id: 'teleopAmp',
         label: 'Amp',
-        type: 'str',
+        type: 'charCount',
         hint: 'any character',
         allowEmpty: true,
     },
