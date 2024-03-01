@@ -346,7 +346,8 @@ function resetValues () {
     if (confirm('Are you sure you want to reset all values?')) {
         values.value = {
             // fields that don't reset
-            name: values.value.name,
+            // name: values.value.name,
+            alliance: values.value.alliance,
         }
     }
 }
