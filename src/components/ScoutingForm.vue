@@ -17,20 +17,29 @@
                     :label="field.label"
                     :hint="field.hint"
                     type="number"
+                    append-icon="mdi-close-circle"
+                    @click:append="values[field.id] = ''"
                 />
+
                 <v-text-field
                     v-else-if="field.type === 'str'"
                     v-model="values[field.id]"
                     :label="field.label"
                     :hint="field.hint"
+                    append-icon="mdi-close-circle"
+                    @click:append="values[field.id] = ''"
                 />
+
                 <v-select
                     v-else-if="field.type === 'select'"
                     v-model="values[field.id]"
                     :label="field.label"
                     :hint="field.hint"
                     :items="field.options || []"
+                    append-icon="mdi-close-circle"
+                    @click:append="values[field.id] = ''"
                 />
+
                 <div
                     v-else-if="field.type === 'header'"
                     class="text-h5"
@@ -66,6 +75,19 @@
                     :hint="field.hint"
                     :true-value="field.trueValue"
                     :false-value="field.falseValue"
+                />
+
+                <v-text-field
+                    v-else-if="field.type === 'charCount'"
+                    v-model="values[field.id]"
+                    :label="field.label"
+                    :hint="field.hint"
+                    append-icon="mdi-plus-circle"
+                    prepend-icon="mdi-minus-circle"
+                    counter
+                    persistent-counter
+                    @click:append="values[field.id] = (values[field.id] || '') + 'x'"
+                    @click:prepend="values[field.id] = (values[field.id] || '').slice(0, -1)"
                 />
             </v-col>
         </v-row>
@@ -109,6 +131,7 @@ type FormField = {
     id: string;
     label: string;
     hint?: string;
+    allowEmpty?: boolean;
 } & ({
     type: 'str' | 'num' | 'header';
 } | {
@@ -121,6 +144,8 @@ type FormField = {
     type: 'checkbox';
     trueValue: string;
     falseValue: string;
+} | {
+    type: 'charCount';
 })
 
 const values = useLocalStorage<{
@@ -128,6 +153,11 @@ const values = useLocalStorage<{
 }>('idk', {});
 
 const fields: FormField[] = [
+    {
+        id: 'name',
+        label: 'Your Name',
+        type: 'str',
+    },
     {
         id: 'matchNum',
         label: 'Match #',
@@ -160,7 +190,6 @@ const fields: FormField[] = [
         id: 'startingPosition',
         label: 'Starting Position',
         type: 'btn-toggle',
-        // options: ['1', '2', '3', '4'],
         btnOpts: [
             { value: '1' },
             { value: '2' },
@@ -185,19 +214,22 @@ const fields: FormField[] = [
     {
         id: 'ampAuton',
         label: 'Amp',
-        hint: 'S score | M miss',
-        type: 'str',
+        hint: 'any character',
+        allowEmpty: true,
+        type: 'charCount',
     },
     {
         id: 'speakerAuton',
         label: 'Speaker',
         hint: 'S score | M miss',
+        allowEmpty: true,
         type: 'str',
     },
     {
         id: 'wingPickupAuton',
-        label: 'Speaker',
+        label: 'Pickups',
         hint: 'S score | M miss',
+        allowEmpty: true,
         type: 'str',
     },
     {
@@ -215,12 +247,15 @@ const fields: FormField[] = [
     {
         id: 'teleopAmp',
         label: 'Amp',
-        type: 'str',
+        type: 'charCount',
+        hint: 'any character',
+        allowEmpty: true,
     },
     {
         id: 'teleopSpeaker',
         label: 'Speaker',
         hint: 'N not amplified | A amplified',
+        allowEmpty: true,
         type: 'str',
     },
     {
@@ -292,20 +327,27 @@ function applyDefaultValues (v: typeof values) {
     return newValues
 }
 
+const fieldsForValues = computed(() => fields.filter(field => field.type !== 'header'))
+
 const debouncedValues = useDebounce(computed(() => applyDefaultValues(values)), 500)
 
 const missingFields = computed(() => {
-    return fields.filter(field => !debouncedValues.value[field.id] && field.type !== 'header');
+    return fieldsForValues.value.filter(field => !debouncedValues.value[field.id] && field.allowEmpty !== true);
 })
 
 const qrContent = computed(() => {
-    return fields.map(field => {
+    return fieldsForValues.value.map(field => {
         const fieldValue = debouncedValues.value[field.id] || ''
         return fieldValue;
     }).join('\t')
 })
 
 function resetValues () {
-    values.value = {}
+    if (confirm('Are you sure you want to reset all values?')) {
+        values.value = {
+            // fields that don't reset
+            name: values.value.name,
+        }
+    }
 }
 </script>
