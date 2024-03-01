@@ -50,7 +50,7 @@
 
     <br>
 
-    <ContentCopy :content="qrContent"/>
+    <ContentCopy :content="qrContent" label="QR Code Content" />
 
     <qr-code
         :contents="qrContent"

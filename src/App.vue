@@ -20,6 +20,8 @@
                                     <QRCodeScanner
                                         @result="onQrScan"
                                     />
+                                    <br>
+                                    <ContentCopy :content="content" label="Scanned Content" />
                                 </v-window-item>
                             </v-window>
                         </v-card-text>
@@ -36,18 +38,16 @@ import QRCodeScanner from '@/components/QRCodeScanner.vue'
 import {
     ref
 } from 'vue'
-import {
-    useDebounce,
-} from '@vueuse/core'
 import ScoutingForm from './components/ScoutingForm.vue';
 
 function onQrScan (msg: string) {
-    content.value = msg;
+    // only add the content if it's new. While the QR is held in view, it might scan multiple times
+    if (!content.value.split('\n').includes(msg)) {
+        content.value += msg + '\n';
+    }
 }
 
 const content = ref('')
-
-const debouncedContent = useDebounce(content, 500)
 
 const mode = ref('entry')
 </script>

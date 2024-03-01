@@ -4,7 +4,9 @@
         :model-value="content"
         style="width:100%"
         readonly
-        label="QR Code Content"
+        no-resize
+        variant="outlined"
+        :label="label"
     />
 
     <v-btn color="blue" block @click="copyContent(content)">
@@ -23,6 +25,7 @@ import {
 
 const props = defineProps({
     content: String,
+    label: String,
 })
 
 const { copy: copyContent } = useClipboard({ source: props.content })
