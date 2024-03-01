@@ -191,7 +191,7 @@ const fields: FormField[] = [
     {
         id: 'ampAuton',
         label: 'Amp',
-        hint: 'S score | M miss',
+        hint: 'any character',
         allowEmpty: true,
         type: 'str',
     },
@@ -225,6 +225,7 @@ const fields: FormField[] = [
         id: 'teleopAmp',
         label: 'Amp',
         type: 'str',
+        hint: 'any character',
         allowEmpty: true,
     },
     {
