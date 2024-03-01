@@ -153,11 +153,11 @@ const values = useLocalStorage<{
 }>('idk', {});
 
 const fields: FormField[] = [
-    {
-        id: 'name',
-        label: 'Your Name',
-        type: 'str',
-    },
+    // {
+    //     id: 'name',
+    //     label: 'Your Name',
+    //     type: 'str',
+    // },
     {
         id: 'matchNum',
         label: 'Match #',
