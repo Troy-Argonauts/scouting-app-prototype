@@ -17,12 +17,16 @@
                     :label="field.label"
                     :hint="field.hint"
                     type="number"
+                    append-icon="mdi-close-circle"
+                    @click:append="values[field.id] = ''"
                 />
                 <v-text-field
                     v-else-if="field.type === 'str'"
                     v-model="values[field.id]"
                     :label="field.label"
                     :hint="field.hint"
+                    append-icon="mdi-close-circle"
+                    @click:append="values[field.id] = ''"
                 />
                 <v-select
                     v-else-if="field.type === 'select'"
@@ -30,6 +34,8 @@
                     :label="field.label"
                     :hint="field.hint"
                     :items="field.options || []"
+                    append-icon="mdi-close-circle"
+                    @click:append="values[field.id] = ''"
                 />
                 <div
                     v-else-if="field.type === 'header'"
