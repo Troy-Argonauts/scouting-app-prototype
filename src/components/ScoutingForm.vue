@@ -214,9 +214,9 @@ const fields: FormField[] = [
     {
         id: 'ampAuton',
         label: 'Amp',
-        hint: 'any character',
+        hint: 'S score | M miss',
         allowEmpty: true,
-        type: 'charCount',
+        type: 'str',
     },
     {
         id: 'speakerAuton',
