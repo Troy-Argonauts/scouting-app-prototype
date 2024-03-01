@@ -11,7 +11,6 @@ import { defineConfig } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
 
 const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'))
-console.log(packageJson.version)
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -35,7 +34,28 @@ export default defineConfig({
         }],
       },
     }),
-    VitePWA({ registerType: 'autoUpdate' }),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: [ 'favicon.png' ],
+      manifest: {
+        name: 'Argonaut Scouting Tool',
+        short_name: 'ArgonautScouting',
+        description: 'A tool for scouting robotics competitions',
+        theme_color: '#c49000',
+        icons: [
+          {
+            src: 'pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
+        ],
+      },
+    }),
   ],
   define: { 'APP_VERSION': `"${packageJson.version}"` },
   resolve: {
