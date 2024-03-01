@@ -79,11 +79,6 @@ const values = useLocalStorage<{
     [id: string]: string;
 }>('idk', {});
 
-function convertValuesToCode (v: typeof values): string {
-    // stub
-    // needs to implement the process used in the excel sheet
-}
-
 const fields: FormField[] = [
     {
         id: 'matchNum',
