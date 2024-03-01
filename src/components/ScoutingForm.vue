@@ -8,9 +8,9 @@
         </v-col>
     </v-row>
 
-    <template v-for="field of fields">
-        <v-row dense>
-            <v-col>
+    <v-row dense>
+        <template v-for="field of fields">
+            <v-col :cols="field.cols ?? 12">
                 <v-text-field
                     v-if="field.type === 'num'"
                     v-model="values[field.id]"
@@ -89,9 +89,23 @@
                     @click:append="values[field.id] = (values[field.id] || '') + 'x'"
                     @click:prepend="values[field.id] = (values[field.id] || '').slice(0, -1)"
                 />
+
+                <v-text-field
+                    v-else-if="field.type === 'counter'"
+                    v-model="values[field.id]"
+                    :label="field.label"
+                    :hint="field.hint"
+                    type="number"
+                    min="0"
+                    append-icon="mdi-plus-circle"
+                    prepend-icon="mdi-minus-circle"
+                    @click:append="values[field.id] = String(Number(values[field.id] || '0') + 1)"
+                    @click:prepend="values[field.id] = String(Math.max(Number(values[field.id] || '0') - 1, field.min ?? 0))"
+                />
+
             </v-col>
-        </v-row>
-    </template>
+        </template>
+    </v-row>
     
     <v-alert
         v-if="missingFields.length > 0"
@@ -132,6 +146,7 @@ type FormField = {
     label: string;
     hint?: string;
     allowEmpty?: boolean;
+    cols?: number;
 } & ({
     type: 'str' | 'num' | 'header';
 } | {
@@ -146,6 +161,9 @@ type FormField = {
     falseValue: string;
 } | {
     type: 'charCount';
+} | {
+    type: 'counter';
+    min?: number;
 })
 
 const values = useLocalStorage<{
@@ -212,25 +230,40 @@ const fields: FormField[] = [
         falseValue: 'no',
     },
     {
-        id: 'ampAuton',
-        label: 'Amp',
-        hint: 'S score | M miss',
-        allowEmpty: true,
-        type: 'str',
+        id: 'ampScoreAuton',
+        label: 'Amp Scores',
+        type: 'counter',
+        cols: 6,
     },
     {
-        id: 'speakerAuton',
-        label: 'Speaker',
-        hint: 'S score | M miss',
-        allowEmpty: true,
-        type: 'str',
+        id: 'ampMissAuton',
+        label: 'Amp Misses',
+        type: 'counter',
+        cols: 6,
     },
     {
-        id: 'wingPickupAuton',
-        label: 'Pickups',
-        hint: 'S score | M miss',
-        allowEmpty: true,
-        type: 'str',
+        id: 'speakerScoreAuton',
+        label: 'Speaker Scores',
+        type: 'counter',
+        cols: 6,
+    },
+    {
+        id: 'speakerMissAuton',
+        label: 'Speaker Misses',
+        type: 'counter',
+        cols: 6,
+    },
+    {
+        id: 'wingScoreAuton',
+        label: 'Wing Scores',
+        type: 'counter',
+        cols: 6,
+    },
+    {
+        id: 'wingMissAuton',
+        label: 'Wing Misses',
+        type: 'counter',
+        cols: 6,
     },
     {
         id: 'autonBreakdown',
@@ -322,6 +355,9 @@ function applyDefaultValues (v: typeof values) {
     for (const field of fields) {
         if (field.type === 'checkbox' && newValues[field.id] === undefined) {
             newValues[field.id] = field.falseValue
+        }
+        if (field.type === 'counter' && newValues[field.id] === undefined) {
+            newValues[field.id] = '0'
         }
     }
     return newValues
