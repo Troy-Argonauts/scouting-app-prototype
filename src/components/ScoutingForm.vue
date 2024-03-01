@@ -196,7 +196,7 @@ const fields: FormField[] = [
     },
     {
         id: 'wingPickupAuton',
-        label: 'Speaker',
+        label: 'Pickups',
         hint: 'S score | M miss',
         type: 'str',
     },
@@ -292,14 +292,16 @@ function applyDefaultValues (v: typeof values) {
     return newValues
 }
 
+const fieldsForValues = computed(() => fields.filter(field => field.type !== 'header'))
+
 const debouncedValues = useDebounce(computed(() => applyDefaultValues(values)), 500)
 
 const missingFields = computed(() => {
-    return fields.filter(field => !debouncedValues.value[field.id] && field.type !== 'header');
+    return fieldsForValues.value.filter(field => !debouncedValues.value[field.id]);
 })
 
 const qrContent = computed(() => {
-    return fields.map(field => {
+    return fieldsForValues.value.map(field => {
         const fieldValue = debouncedValues.value[field.id] || ''
         return fieldValue;
     }).join('\t')
