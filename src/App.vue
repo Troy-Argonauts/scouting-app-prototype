@@ -9,6 +9,10 @@
                         <v-tabs v-model="mode">
                             <v-tab value="entry">Entry</v-tab>
                             <v-tab value="scan">Scan</v-tab>
+                            <v-spacer/>
+                            <div class="mr-2 mt-2">
+                                v{{ appVersion }}
+                            </div>
                         </v-tabs>
             
                         <v-card-text>
@@ -50,4 +54,9 @@ function onQrScan (msg: string) {
 const content = ref('')
 
 const mode = ref('entry')
+
+const appVersion = APP_VERSION
+
+console.log('appVersion', appVersion)
+
 </script>
