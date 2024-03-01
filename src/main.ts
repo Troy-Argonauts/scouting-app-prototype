@@ -6,6 +6,7 @@
 import {
     defineCustomElements
 } from '@bitjson/qr-code'
+import '@/pwa-helper'
 
 // Plugins
 import { registerPlugins } from '@/plugins'

@@ -10,7 +10,17 @@
                             <v-tab value="entry">Entry</v-tab>
                             <v-tab value="scan">Scan</v-tab>
                             <v-spacer/>
-                            <div class="mr-2 mt-2">
+                            <div class="mr-2 mt-2 d-flex align-center">
+                                <v-btn
+                                    v-if="installPromptEvent"
+                                    color="blue"
+                                    class="mr-2"
+                                    icon
+                                    size="x-small"
+                                    @click="promptInstall"
+                                >
+                                    <v-icon>mdi-download</v-icon>
+                                </v-btn>
                                 v{{ appVersion }}
                             </div>
                         </v-tabs>
@@ -42,7 +52,8 @@ import QRCodeScanner from '@/components/QRCodeScanner.vue'
 import {
     ref
 } from 'vue'
-import ScoutingForm from './components/ScoutingForm.vue';
+import ScoutingForm from './components/ScoutingForm.vue'
+import { installPromptEvent } from '@/pwa-helper'
 
 function onQrScan (msg: string) {
     // only add the content if it's new. While the QR is held in view, it might scan multiple times
@@ -58,5 +69,18 @@ const mode = ref('entry')
 const appVersion = APP_VERSION
 
 console.log('appVersion', appVersion)
+
+function promptInstall () {
+    if (!installPromptEvent.value) {
+        return
+    }
+
+    installPromptEvent.value.prompt().then(({ outcome }) => {
+        if (outcome === 'accepted') {
+            console.log('User accepted the install prompt')
+            installPromptEvent.value = null
+        }
+    })
+}
 
 </script>
