@@ -82,6 +82,11 @@ const fields: FormField[] = [
         options: ['yes', 'no'],
     },
     {
+        id: 'teleopAmp',
+        label: 'Amp',
+        type: 'str',
+    },
+    {
         id: 'teleopSpeaker',
         label: 'Speaker: N not amplified | A amplified',
         type: 'str',
