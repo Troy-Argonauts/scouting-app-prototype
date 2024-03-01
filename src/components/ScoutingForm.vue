@@ -115,6 +115,7 @@ type FormField = {
     id: string;
     label: string;
     hint?: string;
+    allowEmpty?: boolean;
 } & ({
     type: 'str' | 'num' | 'header';
 } | {
@@ -166,7 +167,6 @@ const fields: FormField[] = [
         id: 'startingPosition',
         label: 'Starting Position',
         type: 'btn-toggle',
-        // options: ['1', '2', '3', '4'],
         btnOpts: [
             { value: '1' },
             { value: '2' },
@@ -192,18 +192,21 @@ const fields: FormField[] = [
         id: 'ampAuton',
         label: 'Amp',
         hint: 'S score | M miss',
+        allowEmpty: true,
         type: 'str',
     },
     {
         id: 'speakerAuton',
         label: 'Speaker',
         hint: 'S score | M miss',
+        allowEmpty: true,
         type: 'str',
     },
     {
         id: 'wingPickupAuton',
         label: 'Pickups',
         hint: 'S score | M miss',
+        allowEmpty: true,
         type: 'str',
     },
     {
@@ -222,11 +225,13 @@ const fields: FormField[] = [
         id: 'teleopAmp',
         label: 'Amp',
         type: 'str',
+        allowEmpty: true,
     },
     {
         id: 'teleopSpeaker',
         label: 'Speaker',
         hint: 'N not amplified | A amplified',
+        allowEmpty: true,
         type: 'str',
     },
     {
@@ -303,7 +308,7 @@ const fieldsForValues = computed(() => fields.filter(field => field.type !== 'he
 const debouncedValues = useDebounce(computed(() => applyDefaultValues(values)), 500)
 
 const missingFields = computed(() => {
-    return fieldsForValues.value.filter(field => !debouncedValues.value[field.id]);
+    return fieldsForValues.value.filter(field => !debouncedValues.value[field.id] && field.allowEmpty !== true);
 })
 
 const qrContent = computed(() => {
