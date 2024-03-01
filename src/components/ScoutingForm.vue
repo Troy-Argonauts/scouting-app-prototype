@@ -136,6 +136,11 @@ const values = useLocalStorage<{
 
 const fields: FormField[] = [
     {
+        id: 'name',
+        label: 'Your Name',
+        type: 'str',
+    },
+    {
         id: 'matchNum',
         label: 'Match #',
         type: 'num',
@@ -321,7 +326,10 @@ const qrContent = computed(() => {
 
 function resetValues () {
     if (confirm('Are you sure you want to reset all values?')) {
-        values.value = {}
+        values.value = {
+            // fields that don't reset
+            name: values.value.name,
+        }
     }
 }
 </script>
