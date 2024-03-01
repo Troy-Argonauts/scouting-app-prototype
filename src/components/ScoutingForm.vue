@@ -34,6 +34,7 @@
     </template>
     
     <v-alert
+        v-if="missingFields.length > 0"
         type="error"
     >
         All form fields must be filled out! Missing fields:
@@ -49,16 +50,7 @@
 
     <br>
 
-    <v-textarea
-        v-model="qrContent"
-        style="width:100%"
-        label="QR Code Content"
-    />
-
-    <v-btn color="blue" block @click="copyContent(qrContent)">
-        <v-icon class="mr-2">mdi-clipboard</v-icon>
-        Copy to clipboard
-    </v-btn>
+    <ContentCopy :content="qrContent"/>
 
     <qr-code
         :contents="qrContent"
@@ -67,15 +59,13 @@
 
 <script setup lang="ts">
 import {
-    reactive,
     computed,
-    ComputedGetter,
 } from 'vue'
 import {
     useDebounce,
-    useClipboard,
     useLocalStorage,
 } from '@vueuse/core'
+import ContentCopy from '@/components/ContentCopy.vue'
 
 type FormField = {
     id: string;
@@ -241,8 +231,6 @@ const qrContent = computed(() => {
         return fieldValue;
     }).join('\t')
 })
-
-const { copy: copyContent } = useClipboard({ source: qrContent })
 
 function resetValues () {
     values.value = {}
