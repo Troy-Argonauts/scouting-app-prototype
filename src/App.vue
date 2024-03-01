@@ -26,7 +26,7 @@
                         </v-tabs>
             
                         <v-card-text>
-                            <v-window v-model="mode">
+                            <v-window disabled v-model="mode">
                                 <v-window-item value="entry">
                                     <ScoutingForm />
                                 </v-window-item>
