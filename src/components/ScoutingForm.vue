@@ -2,32 +2,56 @@
     <template v-for="field of fields">
         <v-text-field
             v-if="field.type === 'num'"
+            v-model="values[field.id]"
             :label="field.label"
             :hint="field.hint"
             type="number"
         />
         <v-text-field
             v-else-if="field.type === 'str'"
+            v-model="values[field.id]"
             :label="field.label"
             :hint="field.hint"
         />
         <v-select
             v-else-if="field.type === 'select'"
+            v-model="values[field.id]"
             :label="field.label"
             :hint="field.hint"
-            :items="field.options || []"    
+            :items="field.options || []"
         />
-        <v-banner
+        <div
             v-else-if="field.type === 'header'"
             class="text-h5"
-            sticky
-            :text="field.label"
-        />
+        >
+            {{ field.label }}
+        </div>
     </template>
+    
+    <v-alert
+        type="error"
+    >
+        All form fields must be filled out! Missing fields:
+        <ul>
+            <li
+                v-for="missingField of missingFields"
+                class="ml-2"
+            >
+                💩 {{ missingField.label }} ({{ missingField.id }})
+            </li>
+        </ul>
+    </v-alert>
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import {
+    reactive,
+    computed,
+    ComputedGetter,
+} from 'vue'
+import {
+    useDebounce,
+} from '@vueuse/core'
 
 type FormField = {
     id: string;
@@ -180,4 +204,11 @@ const fields: FormField[] = [
     }
 
 ];
+
+const debouncedValues = useDebounce(computed(() => ({ ...values })), 500)
+
+const missingFields = computed(() => {
+    return fields.filter(field => !debouncedValues.value[field.id]);
+})
+
 </script>
