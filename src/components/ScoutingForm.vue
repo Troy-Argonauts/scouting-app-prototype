@@ -8,132 +8,142 @@
         </v-col>
     </v-row>
 
-    <v-row dense>
-        <template v-for="field of fields">
-            <v-col :cols="field.cols ?? 12">
-                <v-text-field
-                    v-if="field.type === 'num'"
-                    v-model="values[field.id]"
-                    :label="field.label"
-                    :hint="field.hint"
-                    type="number"
-                    append-icon="mdi-close-circle"
-                    @click:append="values[field.id] = ''"
-                />
+    <template v-for="group of fieldGroups">
+        <v-card>
+            <v-card-title>
+                {{ group.header }}
+            </v-card-title>
+            <v-card-text>
+                <v-row dense>
+                    <template v-for="field of fieldsByGroup[group.id]">
+                        <v-col :cols="field.cols ?? 12">
+                            <v-text-field
+                                v-if="field.type === 'num'"
+                                v-model="values[field.id]"
+                                :label="field.label"
+                                :hint="field.hint"
+                                type="number"
+                                append-icon="mdi-close-circle"
+                                @click:append="values[field.id] = ''"
+                            />
 
-                <v-text-field
-                    v-else-if="field.type === 'str'"
-                    v-model="values[field.id]"
-                    :label="field.label"
-                    :hint="field.hint"
-                    append-icon="mdi-close-circle"
-                    @click:append="values[field.id] = ''"
-                />
+                            <v-text-field
+                                v-else-if="field.type === 'str'"
+                                v-model="values[field.id]"
+                                :label="field.label"
+                                :hint="field.hint"
+                                append-icon="mdi-close-circle"
+                                @click:append="values[field.id] = ''"
+                            />
 
-                <v-select
-                    v-else-if="field.type === 'select'"
-                    v-model="values[field.id]"
-                    :label="field.label"
-                    :hint="field.hint"
-                    :items="field.options || []"
-                    append-icon="mdi-close-circle"
-                    @click:append="values[field.id] = ''"
-                />
+                            <v-select
+                                v-else-if="field.type === 'select'"
+                                v-model="values[field.id]"
+                                :label="field.label"
+                                :hint="field.hint"
+                                :items="field.options || []"
+                                append-icon="mdi-close-circle"
+                                @click:append="values[field.id] = ''"
+                            />
 
-                <div
-                    v-else-if="field.type === 'header'"
-                    class="text-h5"
+                            <template v-else-if="field.type === 'btn-toggle'">
+                                <div class="d-flex align-center justify-center flex-column">
+                                    <div class="text-subtitle-1">{{ field.label }}</div>
+                                    <v-btn-toggle
+                                        v-model="values[field.id]"
+                                        mandatory
+                                        variant="outlined"
+                                        divided
+                                    >
+                                        <v-btn
+                                            v-for="btnOpt of field.btnOpts || []"
+                                            :value="btnOpt.value"
+                                            size="small"
+                                            :color="btnOpt.color"
+                                        >
+                                            {{ btnOpt.value }}
+                                        </v-btn>
+                                    </v-btn-toggle>
+                                </div>
+                            </template>
+
+                            <v-checkbox
+                                v-else-if="field.type === 'checkbox'"
+                                v-model="values[field.id]"
+                                :label="field.label"
+                                :hint="field.hint"
+                                :true-value="field.trueValue"
+                                :false-value="field.falseValue"
+                            />
+
+                            <v-text-field
+                                v-else-if="field.type === 'charCount'"
+                                v-model="values[field.id]"
+                                :label="field.label"
+                                :hint="field.hint"
+                                append-icon="mdi-plus-circle"
+                                prepend-icon="mdi-minus-circle"
+                                counter
+                                persistent-counter
+                                @click:append="values[field.id] = (values[field.id] || '') + 'x'"
+                                @click:prepend="values[field.id] = (values[field.id] || '').slice(0, -1)"
+                            />
+
+                            <v-text-field
+                                v-else-if="field.type === 'counter'"
+                                v-model="values[field.id]"
+                                :label="field.label"
+                                :hint="field.hint"
+                                type="number"
+                                min="0"
+                                append-icon="mdi-plus-circle"
+                                prepend-icon="mdi-minus-circle"
+                                @click:append="values[field.id] = String(Number(values[field.id] || '0') + 1)"
+                                @click:prepend="values[field.id] = String(Math.max(Number(values[field.id] || '0') - 1, field.min ?? 0))"
+                            />
+
+                        </v-col>
+                    </template>
+                </v-row>
+            </v-card-text>
+        </v-card>
+        <br>
+    </template>
+    <v-card>
+        <v-card-text>
+        <v-alert
+            v-if="missingFields.length > 0"
+            type="error"
+        >
+            All form fields must be filled out! Missing fields:
+            <ul>
+                <li
+                    v-for="missingField of missingFields"
+                    class="ml-2"
                 >
-                    {{ field.label }}
-                </div>
+                    💩 {{ missingField.label }} ({{ missingField.id }})
+                </li>
+            </ul>
+        </v-alert>
 
-                <template v-else-if="field.type === 'btn-toggle'">
-                    <div class="d-flex align-center justify-center flex-column">
-                        <div class="text-subtitle-1">{{ field.label }}</div>
-                        <v-btn-toggle
-                            v-model="values[field.id]"
-                            mandatory
-                            variant="outlined"
-                            divided
-                        >
-                            <v-btn
-                                v-for="btnOpt of field.btnOpts || []"
-                                :value="btnOpt.value"
-                                size="small"
-                                :color="btnOpt.color"
-                            >
-                                {{ btnOpt.value }}
-                            </v-btn>
-                        </v-btn-toggle>
-                    </div>
-                </template>
+        <br>
 
-                <v-checkbox
-                    v-else-if="field.type === 'checkbox'"
-                    v-model="values[field.id]"
-                    :label="field.label"
-                    :hint="field.hint"
-                    :true-value="field.trueValue"
-                    :false-value="field.falseValue"
-                />
+        <ContentCopy :content="qrContent" label="QR Code Content" />
 
-                <v-text-field
-                    v-else-if="field.type === 'charCount'"
-                    v-model="values[field.id]"
-                    :label="field.label"
-                    :hint="field.hint"
-                    append-icon="mdi-plus-circle"
-                    prepend-icon="mdi-minus-circle"
-                    counter
-                    persistent-counter
-                    @click:append="values[field.id] = (values[field.id] || '') + 'x'"
-                    @click:prepend="values[field.id] = (values[field.id] || '').slice(0, -1)"
-                />
-
-                <v-text-field
-                    v-else-if="field.type === 'counter'"
-                    v-model="values[field.id]"
-                    :label="field.label"
-                    :hint="field.hint"
-                    type="number"
-                    min="0"
-                    append-icon="mdi-plus-circle"
-                    prepend-icon="mdi-minus-circle"
-                    @click:append="values[field.id] = String(Number(values[field.id] || '0') + 1)"
-                    @click:prepend="values[field.id] = String(Math.max(Number(values[field.id] || '0') - 1, field.min ?? 0))"
-                />
-
-            </v-col>
-        </template>
-    </v-row>
+        <qr-code
+            :contents="qrContent"
+        />
+        <v-img src="../assets/PP.png" />
+    </v-card-text>
+    </v-card>
     
-    <v-alert
-        v-if="missingFields.length > 0"
-        type="error"
-    >
-        All form fields must be filled out! Missing fields:
-        <ul>
-            <li
-                v-for="missingField of missingFields"
-                class="ml-2"
-            >
-                💩 {{ missingField.label }} ({{ missingField.id }})
-            </li>
-        </ul>
-    </v-alert>
-
-    <br>
-
-    <ContentCopy :content="qrContent" label="QR Code Content" />
-
-    <qr-code
-        :contents="qrContent"
-    />
 </template>
 
 <script setup lang="ts">
 import {
+    
     computed,
+    ref,
 } from 'vue'
 import {
     useDebounce,
@@ -141,14 +151,20 @@ import {
 } from '@vueuse/core'
 import ContentCopy from '@/components/ContentCopy.vue'
 
+type Group = {
+    id: 'prematch' | 'auton' | 'teleop' | 'endgame';
+    header: string;
+}
+
 type FormField = {
     id: string;
     label: string;
     hint?: string;
     allowEmpty?: boolean;
     cols?: number;
+    group: Group['id'];
 } & ({
-    type: 'str' | 'num' | 'header';
+    type: 'str' | 'num';
 } | {
     type: 'select';
     options: string[];
@@ -180,6 +196,7 @@ const fields: FormField[] = [
         id: 'matchNum',
         label: 'Match #',
         type: 'num',
+        group: 'prematch',
     },
     {
         id: 'alliance',
@@ -193,16 +210,13 @@ const fields: FormField[] = [
             { value: 'B2', color: 'blue' },
             { value: 'B3', color: 'blue' },
         ],
+        group: 'prematch',
     },
     {
         id: 'teamNum',
         label: 'Team #',
         type: 'num',
-    },
-    {
-        id: 'headerAuton',
-        label: 'Auton',
-        type: 'header',
+        group: 'prematch',
     },
     {
         id: 'startingPosition',
@@ -214,6 +228,7 @@ const fields: FormField[] = [
             { value: '3' },
             { value: '4' },
         ],
+        group: 'prematch',
     },
     {
         id: 'preloaded',
@@ -221,6 +236,7 @@ const fields: FormField[] = [
         type: 'checkbox',
         trueValue: 'yes',
         falseValue: 'no',
+        group: 'auton',
     },
     {
         id: 'leftStartingZone',
@@ -228,36 +244,43 @@ const fields: FormField[] = [
         type: 'checkbox',
         trueValue: 'yes',
         falseValue: 'no',
+        group: 'auton',
     },
     {
         id: 'ampScoreAuton',
         label: 'Amp Scores',
         type: 'counter',
+        group: 'auton',
     },
     {
         id: 'ampMissAuton',
         label: 'Amp Misses',
         type: 'counter',
+        group: 'auton',
     },
     {
         id: 'speakerScoreAuton',
         label: 'Speaker Scores',
         type: 'counter',
+        group: 'auton',
     },
     {
         id: 'speakerMissAuton',
         label: 'Speaker Misses',
         type: 'counter',
+        group: 'auton',
     },
     {
         id: 'wingScoreAuton',
         label: 'Wing Scores',
         type: 'counter',
+        group: 'auton',
     },
     {
         id: 'wingMissAuton',
         label: 'Wing Misses',
         type: 'counter',
+        group: 'auton',
     },
     {
         id: 'autonBreakdown',
@@ -265,11 +288,7 @@ const fields: FormField[] = [
         type: 'checkbox',
         trueValue: 'yes',
         falseValue: 'no',
-    },
-    {
-        id: 'headerTeleop',
-        label: 'Teleop',
-        type: 'header',
+        group: 'auton',
     },
     {
         id: 'teleopAmp',
@@ -277,6 +296,7 @@ const fields: FormField[] = [
         type: 'charCount',
         hint: 'any character',
         allowEmpty: true,
+        group: 'teleop',
     },
     {
         id: 'teleopSpeaker',
@@ -284,12 +304,14 @@ const fields: FormField[] = [
         hint: 'N not amplified | A amplified',
         allowEmpty: true,
         type: 'str',
+        group: 'teleop',
     },
     {
         id: 'trap',
         label: 'Trap',
         type: 'select',
         options: ['none', '1', '2', '3'],
+        group: 'teleop',
     },
     {
         id: 'unclimb',
@@ -297,48 +319,72 @@ const fields: FormField[] = [
         type: 'checkbox',
         trueValue: 'yes',
         falseValue: 'no',
-    },
-    {
-        id: 'headerEndgame',
-        label: 'End Game',
-        type: 'header',
+        group: 'teleop',
     },
     {
         id: 'onstagePark',
         label: 'Onstage/Park',
         type: 'select',
         options: ['alone', 'park', 'none', 'w/ 1', 'w/ 2'],
+        group: 'endgame',
     },
     {
         id: 'onstagePosition',
         label: 'Onstage Position',
         type: 'select',
         options: ['none', 'left', 'center', 'right'],
-    },
-    {
-        id: 'headerAttrs',
-        label: 'Attributes',
-        type: 'header',
+        group: 'endgame',
     },
     {
         id:'pickupLocation',
         label: 'Pickup Location',
         type: 'select',
         options: ['none', 'floor', 'source', 'both'],
+        group: 'endgame',
     }, 
     {
         id: 'teleopBreakdown',
         label: 'Teleop Breakdowns',
         type: 'select',
         options: ['yes', 'half', 'no'],
+        group: 'endgame',
     },
     {
         id: 'playStyle',
         label: 'Play Style',
         type: 'select',
-        options: ['none', 'offense', 'defense', 'both']
+        options: ['none', 'offense', 'defense', 'both'],
+        group: 'endgame',
     }
 ];
+
+const fieldGroups: Group[] = [
+    {
+        id: 'prematch',
+        header: 'Prematch',
+    },
+    {
+        id: 'auton',
+        header: 'Auton',
+    },
+    {
+        id: 'teleop',
+        header: 'Teleop',
+    },
+    {
+        id: 'endgame',
+        header: 'End Game',
+    },
+]
+
+const fieldsByGroup: {
+    [groupId: string]: FormField[];
+} = {};
+for (const field of fields) {
+    const group = fieldsByGroup[field.group] || [];
+    fieldsByGroup[field.group] = group;
+    group.push(field);
+}
 
 /**
  * for things like checkboxes, the user might not interact with the component.
@@ -353,20 +399,24 @@ function applyDefaultValues (v: typeof values) {
         if (field.type === 'counter' && newValues[field.id] === undefined) {
             newValues[field.id] = '0'
         }
+        // if (field.type === 'counter' && Number(newValues[field.id]) < 0) {
+        //     newValues[field.id] = '0'
+        // }
     }
     return newValues
 }
 
-const fieldsForValues = computed(() => fields.filter(field => field.type !== 'header'))
-
 const debouncedValues = useDebounce(computed(() => applyDefaultValues(values)), 500)
 
 const missingFields = computed(() => {
-    return fieldsForValues.value.filter(field => !debouncedValues.value[field.id] && field.allowEmpty !== true);
+    return fields.filter(field => !debouncedValues.value[field.id] && field.allowEmpty !== true);
 })
 
 const qrContent = computed(() => {
-    return fieldsForValues.value.map(field => {
+    // const valuesIguess = fieldsForValues.value.map(field => values.value[field.id]);
+    // const valuesThatDefinitelyHaveStrings = valuesIguess.map(val => val || '');
+    // const finalStringContent = valuesThatDefinitelyHaveStrings.join('\t')
+    return fields.map(field => {
         const fieldValue = debouncedValues.value[field.id] || ''
         return fieldValue;
     }).join('\t')
