@@ -7,7 +7,7 @@
 
                     <v-card>
                         <v-tabs v-model="mode">
-                            <v-tab value="entry">Entry</v-tab>
+                            <v-tab value="entry">Entry !?!?!?</v-tab>
                             <v-tab value="scan">Scan</v-tab>
                             <v-spacer/>
                             <div class="mr-2 mt-2 d-flex align-center">
@@ -24,22 +24,24 @@
                                 v{{ appVersion }}
                             </div>
                         </v-tabs>
-            
-                        <v-card-text>
-                            <v-window disabled v-model="mode">
-                                <v-window-item value="entry">
-                                    <ScoutingForm />
-                                </v-window-item>
-                                <v-window-item value="scan">
+                    </v-card>
+                    <br>
+                    <v-window disabled v-model="mode">
+                        <v-window-item value="entry">
+                            <ScoutingForm />
+                        </v-window-item>
+                        <v-window-item value="scan">
+                            <v-card>
+                                <v-card-text>
                                     <QRCodeScanner
                                         @result="onQrScan"
                                     />
                                     <br>
                                     <ContentCopy :content="content" label="Scanned Content" />
-                                </v-window-item>
-                            </v-window>
-                        </v-card-text>
-                    </v-card>
+                                </v-card-text>
+                            </v-card>
+                        </v-window-item>
+                    </v-window>
                 </v-col>
             </v-row>
         </v-container>
