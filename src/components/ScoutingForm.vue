@@ -88,7 +88,7 @@
                                 @click:append="values[field.id] = (values[field.id] || '') + 'x'"
                                 @click:prepend="values[field.id] = (values[field.id] || '').slice(0, -1)"
                             />
-
+                            
                             <v-text-field
                                 v-else-if="field.type === 'counter'"
                                 v-model="values[field.id]"
@@ -133,7 +133,7 @@
         <qr-code
             :contents="qrContent"
         />
-        <v-img src="../assets/PP.png" />
+        <!-- <v-img src="../assets/PP.png" /> -->
     </v-card-text>
     </v-card>
     
@@ -192,10 +192,19 @@ const fields: FormField[] = [
     //     label: 'Your Name',
     //     type: 'str',
     // },
+
     {
         id: 'matchNum',
         label: 'Match #',
         type: 'num',
+        cols: 6,
+        group: 'prematch',
+    },
+    {
+        id: 'teamNum',
+        label: 'Team #',
+        type: 'num',
+        cols: 6,
         group: 'prematch',
     },
     {
@@ -213,22 +222,17 @@ const fields: FormField[] = [
         group: 'prematch',
     },
     {
-        id: 'teamNum',
-        label: 'Team #',
-        type: 'num',
-        group: 'prematch',
-    },
-    {
         id: 'startingPosition',
-        label: 'Starting Position',
+        label: 'Amp < --- Starting Position --- > Source',
         type: 'btn-toggle',
         btnOpts: [
             { value: '1' },
             { value: '2' },
             { value: '3' },
             { value: '4' },
+            { value: '5' },
         ],
-        group: 'prematch',
+        group: 'auton',
     },
     {
         id: 'preloaded',
@@ -236,14 +240,16 @@ const fields: FormField[] = [
         type: 'checkbox',
         trueValue: 'yes',
         falseValue: 'no',
+        cols: 6,
         group: 'auton',
     },
     {
-        id: 'leftStartingZone',
-        label: 'Left Starting Zone',
+        id: 'leftZone',
+        label: 'Left Zone',
         type: 'checkbox',
         trueValue: 'yes',
         falseValue: 'no',
+        cols: 6,
         group: 'auton',
     },
     {
@@ -271,91 +277,97 @@ const fields: FormField[] = [
         group: 'auton',
     },
     {
-        id: 'wingScoreAuton',
-        label: 'Wing Scores',
+        id: 'wingPickupAuton',
+        label: 'Wing Pickups',
         type: 'counter',
         group: 'auton',
     },
     {
-        id: 'wingMissAuton',
-        label: 'Wing Misses',
+        id: 'centerPickupAuton',
+        label: 'Center Pickups',
         type: 'counter',
         group: 'auton',
     },
-    {
-        id: 'autonBreakdown',
-        label: 'Auton Breakdown',
-        type: 'checkbox',
-        trueValue: 'yes',
-        falseValue: 'no',
-        group: 'auton',
-    },
+    // {
+    //     id: 'autonBreakdown',
+    //     label: 'Auton Breakdown',
+    //     type: 'checkbox',
+    //     trueValue: 'yes',
+    //     falseValue: 'no',
+    //     group: 'auton',
+    // },
     {
         id: 'teleopAmp',
         label: 'Amp',
-        type: 'charCount',
-        hint: 'any character',
-        allowEmpty: true,
+        type: 'counter',
         group: 'teleop',
     },
     {
-        id: 'teleopSpeaker',
-        label: 'Speaker',
-        hint: 'N not amplified | A amplified',
-        allowEmpty: true,
-        type: 'str',
+        id: 'teleopSpeakerNA',
+        label: 'Speaker (not amp.)',
+        type: 'counter',
         group: 'teleop',
     },
     {
-        id: 'trap',
+        id: 'teleopSpeakerAmp',
+        label: 'Speaker (amplified)',
+        type: 'counter',
+        group: 'teleop',
+    },
+    {
+        id: 'teleopTrap',
         label: 'Trap',
-        type: 'select',
-        options: ['none', '1', '2', '3'],
+        type: 'counter',
         group: 'teleop',
     },
     {
-        id: 'unclimb',
-        label: 'Unclimb',
-        type: 'checkbox',
-        trueValue: 'yes',
-        falseValue: 'no',
-        group: 'teleop',
-    },
-    {
-        id: 'onstagePark',
-        label: 'Onstage/Park',
-        type: 'select',
-        options: ['alone', 'park', 'none', 'w/ 1', 'w/ 2'],
-        group: 'endgame',
-    },
-    {
-        id: 'onstagePosition',
-        label: 'Onstage Position',
-        type: 'select',
-        options: ['none', 'left', 'center', 'right'],
+        id: 'stage',
+        label: 'Stage',
+        type: 'btn-toggle',
+        btnOpts: [
+            { value: 'none', color: 'red' },
+            { value: 'park', color: 'blue' },
+            { value: 'alone', color: 'green' },
+            { value: 'w/1', color: 'green' },
+            { value: 'w/2', color: 'green' },  
+        ],
         group: 'endgame',
     },
     {
         id:'pickupLocation',
         label: 'Pickup Location',
-        type: 'select',
-        options: ['none', 'floor', 'source', 'both'],
+        type: 'btn-toggle',
+        btnOpts: [
+            { value: 'none', color: 'red' },
+            { value: 'floor', color: 'green' },
+            { value: 'source', color: 'green' },
+            { value: 'both', color: 'green' },    
+        ],
         group: 'endgame',
     }, 
     {
-        id: 'teleopBreakdown',
-        label: 'Teleop Breakdowns',
-        type: 'select',
-        options: ['yes', 'half', 'no'],
+        id: 'playStyle',
+        label: 'Play Style',
+        type: 'btn-toggle',
+        btnOpts: [
+            { value: 'none', color: 'red' },
+            { value: 'offense', color: 'green' },
+            { value: 'defense', color: 'green' },
+            { value: 'both', color: 'green' },
+        ],
         group: 'endgame',
     },
     {
-        id: 'playStyle',
-        label: 'Play Style',
-        type: 'select',
-        options: ['none', 'offense', 'defense', 'both'],
+        id: 'teleopBreakdown',
+        label: 'Teleop Breakdowns',
+        type: 'btn-toggle',
+        btnOpts: [
+            { value: 'no', color: 'green' },
+            { value: 'half', color: 'blue' },
+            { value: 'yes', color: 'red' },
+        ],
         group: 'endgame',
-    }
+    },
 ];
 
 const fieldGroups: Group[] = [

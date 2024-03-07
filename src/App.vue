@@ -7,7 +7,7 @@
 
                     <v-card>
                         <v-tabs v-model="mode">
-                            <v-tab value="entry">Entry !?!?!?</v-tab>
+                            <v-tab value="entry">Entry</v-tab>
                             <v-tab value="scan">Scan</v-tab>
                             <v-spacer/>
                             <div class="mr-2 mt-2 d-flex align-center">
