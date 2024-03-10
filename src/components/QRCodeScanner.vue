@@ -40,4 +40,10 @@ onBeforeUnmount(() => {
     }
 });
 
+const conten = ['1', '2', '3'];
+function qr_content() {
+    
+    return conten;
+}
+
 </script>

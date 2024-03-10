@@ -1,3 +1,4 @@
+
 <template>
     <v-row>
         <v-col>
@@ -7,9 +8,36 @@
             </v-btn>
         </v-col>
     </v-row>
+    <v-row>
+        <v-col>
+            <!-- <v-text-field 
+                label="Label" 
+                variant="outlined"
+                
+            ></v-text-field>
+             -->
 
+            <!-- <script setup>
+            import Child from './Child.vue'
+            import { ref } from 'vue'
+
+            const msg = ref('Hello World!')
+            </script>
+
+            <template>
+            <h1>{{ msg }}</h1>
+            <Child v-model="msg" />
+            </template> -->
+
+        </v-col>
+    </v-row>
+    
     <template v-for="group of fieldGroups">
-        <v-card>
+        <v-card
+            class="mx-auto"
+            image="../assets/midnightBlurple.jpg"
+            theme="dark"
+        >
             <v-card-title>
                 {{ group.header }}
             </v-card-title>
@@ -17,6 +45,15 @@
                 <v-row dense>
                     <template v-for="field of fieldsByGroup[group.id]">
                         <v-col :cols="field.cols ?? 12">
+                        
+                            <v-autocomplete
+                                v-if="field.type === 'autocomplete'"
+                                :label="field.label"
+                                :items="field.items"
+                            >
+                            
+                            </v-autocomplete>
+                            
                             <v-text-field
                                 v-if="field.type === 'num'"
                                 v-model="values[field.id]"
@@ -35,23 +72,27 @@
                                 append-icon="mdi-close-circle"
                                 @click:append="values[field.id] = ''"
                             />
-
                             <v-select
                                 v-else-if="field.type === 'select'"
                                 v-model="values[field.id]"
                                 :label="field.label"
                                 :hint="field.hint"
-                                :items="field.options || []"
+                                :items="field.options || []" 
                                 append-icon="mdi-close-circle"
                                 @click:append="values[field.id] = ''"
                             />
 
                             <template v-else-if="field.type === 'btn-toggle'">
                                 <div class="d-flex align-center justify-center flex-column">
-                                    <div class="text-subtitle-1">{{ field.label }}</div>
+                                    <div class="text-subtitle-1">{{ field.label }}
+                                        <v-btn variant="text"
+                                            icon="mdi-close-circle"
+                                            @click="values[field.id] = ''"
+                                        />
+                                    </div>
                                     <v-btn-toggle
+                                        rounded="LG"
                                         v-model="values[field.id]"
-                                        mandatory
                                         variant="outlined"
                                         divided
                                     >
@@ -62,8 +103,13 @@
                                             :color="btnOpt.color"
                                         >
                                             {{ btnOpt.value }}
+                                            
                                         </v-btn>
+                                        
                                     </v-btn-toggle>
+                                    
+                                        
+                                
                                 </div>
                             </template>
 
@@ -96,11 +142,14 @@
                                 :hint="field.hint"
                                 type="number"
                                 min="0"
+
                                 append-icon="mdi-plus-circle"
                                 prepend-icon="mdi-minus-circle"
-                                @click:append="values[field.id] = String(Number(values[field.id] || '0') + 1)"
+
+                                @click:append="values[field.id] = String(Math.min(Number(values[field.id] || '0') + 1, field.max ?? 0))"
                                 @click:prepend="values[field.id] = String(Math.max(Number(values[field.id] || '0') - 1, field.min ?? 0))"
                             />
+                            
 
                         </v-col>
                     </template>
@@ -133,7 +182,6 @@
         <qr-code
             :contents="qrContent"
         />
-        <!-- <v-img src="../assets/PP.png" /> -->
     </v-card-text>
     </v-card>
     
@@ -141,7 +189,6 @@
 
 <script setup lang="ts">
 import {
-    
     computed,
     ref,
 } from 'vue'
@@ -150,7 +197,6 @@ import {
     useLocalStorage,
 } from '@vueuse/core'
 import ContentCopy from '@/components/ContentCopy.vue'
-
 type Group = {
     id: 'prematch' | 'auton' | 'teleop' | 'endgame';
     header: string;
@@ -166,6 +212,9 @@ type FormField = {
 } & ({
     type: 'str' | 'num';
 } | {
+    type: 'autocomplete';
+    items: string[];
+} | {
     type: 'select';
     options: string[];
 } | {
@@ -180,32 +229,33 @@ type FormField = {
 } | {
     type: 'counter';
     min?: number;
+    max: number;
 })
 
 const values = useLocalStorage<{
     [id: string]: string;
 }>('idk', {});
 
+// import QRCodeScanner from '@/components/QRCodeScanner.vue';
+// const aaa = QRCodeScanner.qr_content();
+
+const teamItems = [values.value.alliance, '1 R2 33', '1 R3 226'];
+
 const fields: FormField[] = [
-    // {
-    //     id: 'name',
-    //     label: 'Your Name',
-    //     type: 'str',
-    // },
+    {
+        id: 'name',
+        label: 'Scouter Name',
+        type: 'str',
+        group: 'prematch',
+    },
 
     {
         id: 'matchNum',
         label: 'Match #',
-        type: 'num',
-        cols: 6,
+        type: 'counter',
         group: 'prematch',
-    },
-    {
-        id: 'teamNum',
-        label: 'Team #',
-        type: 'num',
-        cols: 6,
-        group: 'prematch',
+        min: 1,
+        max: 80,
     },
     {
         id: 'alliance',
@@ -222,15 +272,22 @@ const fields: FormField[] = [
         group: 'prematch',
     },
     {
+        id: 'teamNum',
+        label: 'Team Number',
+        type: 'autocomplete',
+        items: teamItems,
+        group: 'prematch',
+    },
+    {
         id: 'startingPosition',
         label: 'Amp < --- Starting Position --- > Source',
         type: 'btn-toggle',
         btnOpts: [
-            { value: '1' },
-            { value: '2' },
-            { value: '3' },
-            { value: '4' },
-            { value: '5' },
+            { value: '1', color: 'teal-accent-2' },
+            { value: '2', color: 'teal-accent-2' },
+            { value: '3', color: 'teal-accent-2' },
+            { value: '4', color: 'teal-accent-2' },
+            { value: '5', color: 'teal-accent-2' },
         ],
         group: 'auton',
     },
@@ -257,79 +314,81 @@ const fields: FormField[] = [
         label: 'Amp Scores',
         type: 'counter',
         group: 'auton',
+        max: 99,
     },
     {
         id: 'ampMissAuton',
         label: 'Amp Misses',
         type: 'counter',
         group: 'auton',
+        max: 99,
     },
     {
         id: 'speakerScoreAuton',
         label: 'Speaker Scores',
         type: 'counter',
         group: 'auton',
+        max: 99,
     },
     {
         id: 'speakerMissAuton',
         label: 'Speaker Misses',
         type: 'counter',
         group: 'auton',
+        max: 99,
     },
     {
         id: 'wingPickupAuton',
         label: 'Wing Pickups',
         type: 'counter',
         group: 'auton',
+        max: 99,
     },
     {
         id: 'centerPickupAuton',
         label: 'Center Pickups',
         type: 'counter',
         group: 'auton',
+        max: 99,
     },
-    // {
-    //     id: 'autonBreakdown',
-    //     label: 'Auton Breakdown',
-    //     type: 'checkbox',
-    //     trueValue: 'yes',
-    //     falseValue: 'no',
-    //     group: 'auton',
-    // },
     {
         id: 'teleopAmp',
         label: 'Amp',
         type: 'counter',
         group: 'teleop',
+        max: 99,
     },
     {
         id: 'teleopSpeakerNA',
         label: 'Speaker (not amp.)',
         type: 'counter',
         group: 'teleop',
+        max: 99,
     },
     {
         id: 'teleopSpeakerAmp',
         label: 'Speaker (amplified)',
         type: 'counter',
         group: 'teleop',
+        max: 99,
     },
     {
         id: 'teleopTrap',
         label: 'Trap',
         type: 'counter',
         group: 'teleop',
+        max: 3,
     },
     {
         id: 'stage',
         label: 'Stage',
         type: 'btn-toggle',
         btnOpts: [
-            { value: 'none', color: 'red' },
-            { value: 'park', color: 'blue' },
-            { value: 'alone', color: 'green' },
-            { value: 'w/1', color: 'green' },
-            { value: 'w/2', color: 'green' },  
+            { value: 'none', color: 'teal-accent-2' },
+            { value: 'park', color: 'teal-accent-2' },
+            { value: 'alone', color: 'teal-accent-2' },
+            { value: 'w/1', color: 'teal-accent-2' },
+            { value: 'w/2', color: 'teal-accent-2' },  
         ],
         group: 'endgame',
     },
@@ -338,10 +397,10 @@ const fields: FormField[] = [
         label: 'Pickup Location',
         type: 'btn-toggle',
         btnOpts: [
-            { value: 'none', color: 'red' },
-            { value: 'floor', color: 'green' },
-            { value: 'source', color: 'green' },
-            { value: 'both', color: 'green' },    
+            { value: 'none', color: 'teal-accent-2' },
+            { value: 'floor', color: 'teal-accent-2' },
+            { value: 'source', color: 'teal-accent-2' },
+            { value: 'both', color: 'teal-accent-2' },    
         ],
         group: 'endgame',
     }, 
@@ -350,10 +409,10 @@ const fields: FormField[] = [
         label: 'Play Style',
         type: 'btn-toggle',
         btnOpts: [
-            { value: 'none', color: 'red' },
-            { value: 'offense', color: 'green' },
-            { value: 'defense', color: 'green' },
-            { value: 'both', color: 'green' },
+            { value: 'none', color: 'teal-accent-2' },
+            { value: 'offense', color: 'teal-accent-2' },
+            { value: 'defense', color: 'teal-accent-2' },
+            { value: 'both', color: 'teal-accent-2' },
         ],
         group: 'endgame',
     },
@@ -362,9 +421,9 @@ const fields: FormField[] = [
         label: 'Teleop Breakdowns',
         type: 'btn-toggle',
         btnOpts: [
-            { value: 'no', color: 'green' },
-            { value: 'half', color: 'blue' },
-            { value: 'yes', color: 'red' },
+            { value: 'no', color: 'teal-accent-2' },
+            { value: 'half', color: 'teal-accent-2' },
+            { value: 'yes', color: 'teal-accent-2' },
         ],
         group: 'endgame',
     },
@@ -440,6 +499,8 @@ function resetValues () {
             // fields that don't reset
             // name: values.value.name,
             alliance: values.value.alliance,
+            name: values.value.name,
+            matchNum: values.value.matchNum,
         }
     }
 }
