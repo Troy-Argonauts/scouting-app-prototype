@@ -171,7 +171,6 @@ import {
     useLocalStorage,
 } from '@vueuse/core'
 import ContentCopy from '@/components/ContentCopy.vue'
-import TeamEntry from './TeamEntry.vue';
 type Group = {
     id: 'prematch' | 'auton' | 'teleop' | 'endgame';
     header: string;
@@ -214,16 +213,21 @@ const values = useLocalStorage<{
 // import QRCodeScanner from '@/components/QRCodeScanner.vue';
 // const aaa = QRCodeScanner.qr_content();
 
-const teamItems = [, '1 R2 33'.split(/\n/), '1 R3 226'];
+// const teamItems = ['1 R1 8728', '1 R2 33', '1 R3 226'];
 
 const fields: FormField[] = [
+    // {
+    //     id: 'name',
+    //     label: 'Scouter Name',
+    //     type: 'str',
+    //     group: 'prematch',
+    // },
     {
-        id: 'name',
-        label: 'Scouter Name',
-        type: 'str',
+        id: 'teamNum',
+        label: 'Team Number',
+        type: 'num',
         group: 'prematch',
     },
-
     {
         id: 'matchNum',
         label: 'Match #',
@@ -246,13 +250,13 @@ const fields: FormField[] = [
         ],
         group: 'prematch',
     },
-    {
-        id: 'teamNum',
-        label: 'Team Number',
-        type: 'autocomplete',
-        items: teamItems,
-        group: 'prematch',
-    },
+    // {
+    //     id: 'teamNum',
+    //     label: 'Team Number',
+    //     type: 'autocomplete',
+    //     items: teamItems,
+    //     group: 'prematch',
+    // },
     {
         id: 'startingPosition',
         label: 'Amp < --- Starting Position --- > Source',
@@ -270,8 +274,8 @@ const fields: FormField[] = [
         id: 'preloaded',
         label: 'Preloaded',
         type: 'checkbox',
-        trueValue: 'yes',
-        falseValue: 'no',
+        trueValue: '2',
+        falseValue: '1',
         cols: 6,
         group: 'auton',
     },
@@ -279,8 +283,8 @@ const fields: FormField[] = [
         id: 'leftZone',
         label: 'Left Zone',
         type: 'checkbox',
-        trueValue: 'yes',
-        falseValue: 'no',
+        trueValue: '2',
+        falseValue: '1',
         cols: 6,
         group: 'auton',
     },
@@ -439,12 +443,151 @@ for (const field of fields) {
 function applyDefaultValues (v: typeof values) {
     const newValues = { ...values.value } // clone
     for (const field of fields) {
+        
         if (field.type === 'checkbox' && newValues[field.id] === undefined) {
             newValues[field.id] = field.falseValue
         }
         if (field.type === 'counter' && newValues[field.id] === undefined) {
             newValues[field.id] = '0'
         }
+
+        // Error messages
+
+        if(field.id === 'startingPosition' && (newValues[field.id] === '' || newValues[field.id] === undefined))
+        {
+            newValues[field.id] = 'error'
+        }
+
+        if(field.id === 'teamNum' && (newValues[field.id] === '' || newValues[field.id] === undefined))
+        {
+            newValues[field.id] = 'error'
+        }
+
+        // Calculating the code here:
+
+        if(field.id === 'teamNum')
+        {
+            newValues[field.id] = newValues[field.id] + '\t'
+        }
+
+        if(field.id === 'matchNum')
+        {
+            if(parseInt(newValues[field.id]) < 1 || newValues[field.id] === undefined || newValues[field.id] === '')
+            {
+                newValues[field.id] = 'error'
+            }
+            else if(parseInt(newValues[field.id]) < 10)
+            {
+                newValues[field.id] = '0' + newValues[field.id]
+            }
+        }
+
+        if (field.id === 'alliance') {
+            if(newValues[field.id] === 'R1'){
+            newValues[field.id] = '1'
+            }
+            else if(newValues[field.id] === 'R2'){
+            newValues[field.id] = '2'
+            }
+            else if(newValues[field.id] === 'R3'){
+            newValues[field.id] = '3'
+            }
+            else if(newValues[field.id] === 'B1'){
+            newValues[field.id] = '4'
+            }
+            else if(newValues[field.id] === 'B2'){
+            newValues[field.id] = '5'
+            }
+            else if(newValues[field.id] === 'B3'){
+            newValues[field.id] = '6'
+            }
+            else{
+            newValues[field.id] = 'error' 
+            }
+        }
+
+        if (field.id === 'stage') {
+            if(newValues[field.id] === 'none'){
+            newValues[field.id] = '1'
+            }
+            else if(newValues[field.id] === 'park'){
+            newValues[field.id] = '2'
+            }
+            else if(newValues[field.id] === 'alone'){
+            newValues[field.id] = '3'
+            }
+            else if(newValues[field.id] === 'w/1'){
+            newValues[field.id] = '4'
+            }
+            else if(newValues[field.id] === 'w/2'){
+            newValues[field.id] = '5'
+            }
+            else{
+            newValues[field.id] = 'error' 
+            }
+        }
+        
+        if (field.id === 'pickupLocation') {
+            if(newValues[field.id] === 'none'){
+            newValues[field.id] = '1'
+            }
+            else if(newValues[field.id] === 'floor'){
+            newValues[field.id] = '2'
+            }
+            else if(newValues[field.id] === 'source'){
+            newValues[field.id] = '3'
+            }
+            else if(newValues[field.id] === 'both'){
+            newValues[field.id] = '4'
+            }
+            else{
+            newValues[field.id] = 'error' 
+            }
+        }
+
+        if (field.id === 'playStyle') {
+            if(newValues[field.id] === 'none'){
+            newValues[field.id] = '1'
+            }
+            else if(newValues[field.id] === 'offense'){
+            newValues[field.id] = '2'
+            }
+            else if(newValues[field.id] === 'defense'){
+            newValues[field.id] = '3'
+            }
+            else if(newValues[field.id] === 'both'){
+            newValues[field.id] = '4'
+            }
+            else{
+            newValues[field.id] = 'error' 
+            }
+        }
+
+        if (field.id === 'teleopBreakdown') {
+            if(newValues[field.id] === 'no'){
+            newValues[field.id] = '1'
+            }
+            else if(newValues[field.id] === 'half'){
+            newValues[field.id] = '2'
+            }
+            else if(newValues[field.id] === 'yes'){
+            newValues[field.id] = '3'
+            }
+            else{
+            newValues[field.id] = 'error' 
+            }
+        }
+
+        // Adding letters to values that could be double digits
+
+        if (field.id === 'teleopAmp') {
+            newValues[field.id] = 'a' + newValues[field.id] + 'b'
+        }
+
+        if (field.id === 'teleopSpeakerAmp') {
+            newValues[field.id] = 'c' + newValues[field.id] + 'd'
+        }
+
         // if (field.type === 'counter' && Number(newValues[field.id]) < 0) {
         //     newValues[field.id] = '0'
         // }
@@ -465,7 +608,8 @@ const qrContent = computed(() => {
     return fields.map(field => {
         const fieldValue = debouncedValues.value[field.id] || ''
         return fieldValue;
-    }).join('\t')
+    }).join('')
+    // .join('\t') if we want to do tabs
 })
 
 function resetValues () {
