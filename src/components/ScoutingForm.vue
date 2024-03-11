@@ -1,4 +1,3 @@
-
 <template>
     <v-row>
         <v-col>
@@ -8,30 +7,7 @@
             </v-btn>
         </v-col>
     </v-row>
-    <v-row>
-        <v-col>
-            <!-- <v-text-field 
-                label="Label" 
-                variant="outlined"
-                
-            ></v-text-field>
-             -->
 
-            <!-- <script setup>
-            import Child from './Child.vue'
-            import { ref } from 'vue'
-
-            const msg = ref('Hello World!')
-            </script>
-
-            <template>
-            <h1>{{ msg }}</h1>
-            <Child v-model="msg" />
-            </template> -->
-
-        </v-col>
-    </v-row>
-    
     <template v-for="group of fieldGroups">
         <v-card
             class="mx-auto"
@@ -50,9 +26,7 @@
                                 v-if="field.type === 'autocomplete'"
                                 :label="field.label"
                                 :items="field.items"
-                            >
-                            
-                            </v-autocomplete>
+                            ></v-autocomplete>
                             
                             <v-text-field
                                 v-if="field.type === 'num'"
@@ -197,6 +171,7 @@ import {
     useLocalStorage,
 } from '@vueuse/core'
 import ContentCopy from '@/components/ContentCopy.vue'
+import TeamEntry from './TeamEntry.vue';
 type Group = {
     id: 'prematch' | 'auton' | 'teleop' | 'endgame';
     header: string;
@@ -239,7 +214,7 @@ const values = useLocalStorage<{
 // import QRCodeScanner from '@/components/QRCodeScanner.vue';
 // const aaa = QRCodeScanner.qr_content();
 
-const teamItems = [values.value.alliance, '1 R2 33', '1 R3 226'];
+const teamItems = [, '1 R2 33'.split(/\n/), '1 R3 226'];
 
 const fields: FormField[] = [
     {

@@ -7,8 +7,9 @@
 
                     <v-card>
                         <v-tabs v-model="mode">
+                            <v-tab value="teams">Teams</v-tab>
                             <v-tab value="entry">Entry</v-tab>
-                            <v-tab value="scan">Scan</v-tab>
+                            <v-tab value="scan">Scan</v-tab>           
                             <v-spacer/>
                             <div class="mr-2 mt-2 d-flex align-center">
                                 <v-btn
@@ -41,6 +42,9 @@
                                 </v-card-text>
                             </v-card>
                         </v-window-item>
+                        <v-window-item value="teams">
+                            <TeamEntry />
+                        </v-window-item>
                     </v-window>
                 </v-col>
             </v-row>
@@ -55,6 +59,7 @@ import {
     ref
 } from 'vue'
 import ScoutingForm from './components/ScoutingForm.vue'
+import TeamEntry from './components/TeamEntry.vue'
 import { installPromptEvent } from '@/pwa-helper'
 
 function onQrScan (msg: string) {

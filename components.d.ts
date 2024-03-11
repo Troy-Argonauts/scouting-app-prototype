@@ -12,5 +12,6 @@ declare module 'vue' {
     Entry: typeof import('./src/components/Entry.vue')['default']
     QRCodeScanner: typeof import('./src/components/QRCodeScanner.vue')['default']
     ScoutingForm: typeof import('./src/components/ScoutingForm.vue')['default']
+    TeamEntry: typeof import('./src/components/TeamEntry.vue')['default']
   }
 }
