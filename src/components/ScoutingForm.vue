@@ -211,11 +211,6 @@ const values = useLocalStorage<{
     [id: string]: string;
 }>('idk', {});
 
-// import QRCodeScanner from '@/components/QRCodeScanner.vue';
-// const aaa = QRCodeScanner.qr_content();
-
-// const teamItems = ['1 R1 8728', '1 R2 33', '1 R3 226'];
-
 const fields: FormField[] = [
     // {
     //     id: 'name',
@@ -445,12 +440,12 @@ function applyDefaultValues (v: typeof values) {
 
         // Error messages
 
-        if(field.id === 'startingPosition' && (newValues[field.id] === '' || newValues[field.id] === undefined))
+        if(field.id === 'startingPosition' && !newValues[field.id])
         {
             newValues[field.id] = 'error'
         }
 
-        if(field.id === 'teamNum' && (newValues[field.id] === '' || newValues[field.id] === undefined))
+        if(field.id === 'teamNum' && !newValues[field.id])
         {
             newValues[field.id] = 'error'
         }
@@ -464,13 +459,13 @@ function applyDefaultValues (v: typeof values) {
 
         if(field.id === 'matchNum')
         {
-            if(parseInt(newValues[field.id]) < 1 || newValues[field.id] === undefined || newValues[field.id] === '')
+            if(parseInt(newValues[field.id]) < 1 || !newValues[field.id])
             {
                 newValues[field.id] = 'error'
             }
-            else if(parseInt(newValues[field.id]) < 10)
+            else if((newValues[field.id] || '').length < 2)
             {
-                newValues[field.id] = '0' + newValues[field.id]
+                newValues[field.id] = (newValues[field.id] || '').padStart(2, '0')
             }
         }
 
@@ -596,8 +591,6 @@ const missingFields = computed(() => {
     (debouncedValues.value[field.id] === 'error\t')
     );
 })
-
-//!debouncedValues.value[field.id] && field.allowEmpty !== true) ||
 
 const qrContent = computed(() => {
     // const valuesIguess = fieldsForValues.value.map(field => values.value[field.id]);
