@@ -164,7 +164,7 @@
                 All form fields must be filled out! Missing fields:
                 <ul>
                     <li v-for="missingField of missingFields" class="ml-2">
-                        (🐧) {{ missingField.id }}
+                        🐧❗️ {{ missingField.id }}
                         <!-- ({{ missingField.id }}) -->
                     </li>
                 </ul>
