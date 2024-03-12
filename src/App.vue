@@ -7,8 +7,8 @@
                         <v-card>
                             <v-tabs v-model="mode">
                                 <v-tab value="teams">Teams</v-tab>
+                                <v-tab value="map">Map</v-tab>
                                 <v-tab value="entry">Entry</v-tab>
-                                <v-tab value="references">References</v-tab>
                                 <v-tab value="scan">Scan</v-tab>
                                 <v-spacer />
                                 <div class="mr-2 mt-2 d-flex align-center">
@@ -46,7 +46,7 @@
                             <v-window-item value="teams">
                                 <TeamEntry />
                             </v-window-item>
-                            <v-window-item value="references">
+                            <v-window-item value="map">
                                 <CheatSheet />
                             </v-window-item>
                         </v-window>
