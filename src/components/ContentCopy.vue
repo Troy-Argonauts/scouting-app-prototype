@@ -1,8 +1,7 @@
 <template>
-
     <v-textarea
         :model-value="content"
-        style="width:100%"
+        style="width: 100%"
         readonly
         no-resize
         variant="outlined"
@@ -16,18 +15,13 @@
 </template>
 
 <script setup lang="ts">
-import {
-    defineProps
-} from 'vue'
-import {
-    useClipboard,
-} from '@vueuse/core'
+import { defineProps } from 'vue';
+import { useClipboard } from '@vueuse/core';
 
 const props = defineProps({
     content: String,
     label: String,
-})
+});
 
-const { copy: copyContent } = useClipboard({ source: props.content })
-
+const { copy: copyContent } = useClipboard({ source: props.content });
 </script>

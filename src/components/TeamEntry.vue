@@ -1,10 +1,5 @@
 <template>
-
-    <v-card
-        class="mx-auto"
-        image="../assets/midnightBlurple.jpg"
-        theme="dark"
-    >
+    <v-card class="mx-auto" image="../assets/midnightBlurple.jpg" theme="dark">
         <v-container fluid>
             <v-textarea
                 label="Match | Alliance | Team"
@@ -16,6 +11,3 @@
         </v-container>
     </v-card>
 </template>
-
-
-

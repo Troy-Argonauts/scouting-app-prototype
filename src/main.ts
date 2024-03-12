@@ -3,23 +3,21 @@
  *
  * Bootstraps Vuetify and other plugins then mounts the App`
  */
-import {
-    defineCustomElements
-} from '@bitjson/qr-code'
-import '@/pwa-helper'
+import { defineCustomElements } from '@bitjson/qr-code';
+import '@/pwa-helper';
 
 // Plugins
-import { registerPlugins } from '@/plugins'
+import { registerPlugins } from '@/plugins';
 
 // Components
-import App from './App.vue'
+import App from './App.vue';
 
 // Composables
-import { createApp } from 'vue'
+import { createApp } from 'vue';
 
-const app = createApp(App)
+const app = createApp(App);
 
-registerPlugins(app)
-defineCustomElements(window)
+registerPlugins(app);
+defineCustomElements(window);
 
-app.mount('#app')
+app.mount('#app');

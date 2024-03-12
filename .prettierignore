@@ -1,0 +1,8 @@
+# Ignore artifacts:
+build
+coverage
+dist
+.firebase
+node_modules
+.yarn
+components.d.ts
