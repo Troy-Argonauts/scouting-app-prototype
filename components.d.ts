@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    CheatSheet: typeof import('./src/components/CheatSheet.vue')['default']
     ContentCopy: typeof import('./src/components/ContentCopy.vue')['default']
     QRCodeScanner: typeof import('./src/components/QRCodeScanner.vue')['default']
     ScoutingForm: typeof import('./src/components/ScoutingForm.vue')['default']

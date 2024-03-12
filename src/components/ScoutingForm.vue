@@ -1,7 +1,7 @@
 <template>
     <v-row>
         <v-col>
-            <v-btn class="mb-2" block color="green" @click="resetValues">
+            <v-btn class="mb-2" block color="deep-purple-darken-4" @click="resetValues">
                 <v-icon class="mr-2">mdi-reload</v-icon>
                 Reset Values
             </v-btn>
@@ -21,6 +21,15 @@
                 <v-row dense>
                     <template v-for="field of fieldsByGroup[group.id]">
                         <v-col :cols="field.cols ?? 12">
+                            <v-expansion-panels>
+                                <v-expansion-panel
+                                    v-if="field.type === 'expansion-panel'"
+                                    :title="field.label"
+                                    :text= "field.contents"
+                                    bg-color='black'
+                                >
+                                </v-expansion-panel>
+                            </v-expansion-panels>
                             <v-autocomplete
                                 v-if="field.type === 'autocomplete'"
                                 :label="field.label"
@@ -155,7 +164,7 @@
                 All form fields must be filled out! Missing fields:
                 <ul>
                     <li v-for="missingField of missingFields" class="ml-2">
-                        [💩] {{ missingField.label }}
+                        🐧❗️ {{ missingField.id }}
                         <!-- ({{ missingField.id }}) -->
                     </li>
                 </ul>
@@ -195,6 +204,10 @@ type FormField = {
           items: string[];
       }
     | {
+          type: 'expansion-panel';
+          contents: string,
+      }
+    | {
           type: 'select';
           options: string[];
       }
@@ -222,12 +235,6 @@ const values = useLocalStorage<{
 }>('idk', {});
 
 const fields: FormField[] = [
-    // {
-    //     id: 'name',
-    //     label: 'Scouter Name',
-    //     type: 'str',
-    //     group: 'prematch',
-    // },
     {
         id: 'teamNum',
         label: 'Team Number',
@@ -265,7 +272,7 @@ const fields: FormField[] = [
     // },
     {
         id: 'startingPosition',
-        label: 'Amp ◀ Starting Position ▶ Source',
+        label: 'Amp <Starting Position> Source',
         type: 'btn-toggle',
         btnOpts: [
             { value: '1', color: 'teal-accent-2' },
@@ -597,8 +604,13 @@ function resetValues() {
             // fields that don't reset
             // name: values.value.name,
             alliance: values.value.alliance,
-            name: values.value.name,
-            matchNum: values.value.matchNum,
+            matchNum: String(
+                                Math.min(
+                                    Number(values.value.matchNum || '0') + 1,
+                                        80
+                                    )
+                            )
+
         };
     }
 }
