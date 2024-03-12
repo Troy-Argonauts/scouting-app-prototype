@@ -1,6 +1,6 @@
 {
   "name": "scouting-app-prototype",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "scripts": {
     "dev": "cross-env NODE_OPTIONS='--no-warnings' vite",
     "build": "vue-tsc --noEmit && vite build",

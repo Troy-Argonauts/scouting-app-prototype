@@ -255,7 +255,7 @@ const fields: FormField[] = [
     // },
     {
         id: 'startingPosition',
-        label: 'Amp < --- Starting Position --- > Source',
+        label: 'Amp ◀ Starting Position ▶ Source',
         type: 'btn-toggle',
         btnOpts: [
             { value: '1', color: 'teal-accent-2' },
