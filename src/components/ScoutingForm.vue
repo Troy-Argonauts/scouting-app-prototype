@@ -1,7 +1,7 @@
 <template>
     <v-row>
         <v-col>
-            <v-btn class="mb-2" block color="green" @click="resetValues">
+            <v-btn class="mb-2" block color="deep-purple-darken-4" @click="resetValues">
                 <v-icon class="mr-2">mdi-reload</v-icon>
                 Reset Values
             </v-btn>

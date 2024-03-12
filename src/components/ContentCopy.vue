@@ -8,7 +8,7 @@
         :label="label"
     />
 
-    <v-btn color="blue" block @click="copyContent(content)">
+    <v-btn color="deep-purple-darken-4" block @click="copyContent(content)">
         <v-icon class="mr-2">mdi-clipboard</v-icon>
         Copy to clipboard
     </v-btn>
