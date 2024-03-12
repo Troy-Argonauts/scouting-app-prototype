@@ -604,7 +604,13 @@ function resetValues() {
             // fields that don't reset
             // name: values.value.name,
             alliance: values.value.alliance,
-            matchNum: values.value.matchNum,
+            matchNum: String(
+                                Math.min(
+                                    Number(values.value.matchNum || '0') + 1,
+                                        80
+                                    )
+                            )
+
         };
     }
 }
