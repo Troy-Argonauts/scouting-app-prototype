@@ -9,7 +9,11 @@
     </v-row>
 
     <template v-for="group of fieldGroups">
-        <v-card>
+        <v-card
+            class="mx-auto"
+            image="../assets/midnightBlurple.jpg"
+            theme="dark"
+        >
             <v-card-title>
                 {{ group.header }}
             </v-card-title>
@@ -17,6 +21,13 @@
                 <v-row dense>
                     <template v-for="field of fieldsByGroup[group.id]">
                         <v-col :cols="field.cols ?? 12">
+                        
+                            <v-autocomplete
+                                v-if="field.type === 'autocomplete'"
+                                :label="field.label"
+                                :items="field.items"
+                            ></v-autocomplete>
+                            
                             <v-text-field
                                 v-if="field.type === 'num'"
                                 v-model="values[field.id]"
@@ -35,23 +46,27 @@
                                 append-icon="mdi-close-circle"
                                 @click:append="values[field.id] = ''"
                             />
-
                             <v-select
                                 v-else-if="field.type === 'select'"
                                 v-model="values[field.id]"
                                 :label="field.label"
                                 :hint="field.hint"
-                                :items="field.options || []"
+                                :items="field.options || []" 
                                 append-icon="mdi-close-circle"
                                 @click:append="values[field.id] = ''"
                             />
 
                             <template v-else-if="field.type === 'btn-toggle'">
                                 <div class="d-flex align-center justify-center flex-column">
-                                    <div class="text-subtitle-1">{{ field.label }}</div>
+                                    <div class="text-subtitle-1">{{ field.label }}
+                                        <v-btn variant="text"
+                                            icon="mdi-close-circle"
+                                            @click="values[field.id] = ''"
+                                        />
+                                    </div>
                                     <v-btn-toggle
+                                        rounded="LG"
                                         v-model="values[field.id]"
-                                        mandatory
                                         variant="outlined"
                                         divided
                                     >
@@ -62,8 +77,13 @@
                                             :color="btnOpt.color"
                                         >
                                             {{ btnOpt.value }}
+                                            
                                         </v-btn>
+                                        
                                     </v-btn-toggle>
+                                    
+                                        
+                                
                                 </div>
                             </template>
 
@@ -95,12 +115,15 @@
                                 :label="field.label"
                                 :hint="field.hint"
                                 type="number"
-                                min="0"
+                                :min="field.min ?? 0"
+                                :max="field.max ?? 99"
                                 append-icon="mdi-plus-circle"
                                 prepend-icon="mdi-minus-circle"
-                                @click:append="values[field.id] = String(Number(values[field.id] || '0') + 1)"
+
+                                @click:append="values[field.id] = String(Math.min(Number(values[field.id] || '0') + 1, field.max ?? 99))"
                                 @click:prepend="values[field.id] = String(Math.max(Number(values[field.id] || '0') - 1, field.min ?? 0))"
                             />
+                            
 
                         </v-col>
                     </template>
@@ -121,7 +144,8 @@
                     v-for="missingField of missingFields"
                     class="ml-2"
                 >
-                    💩 {{ missingField.label }} ({{ missingField.id }})
+                    [💩] {{ missingField.label }}
+                    <!-- ({{ missingField.id }}) -->
                 </li>
             </ul>
         </v-alert>
@@ -133,7 +157,6 @@
         <qr-code
             :contents="qrContent"
         />
-        <!-- <v-img src="../assets/PP.png" /> -->
     </v-card-text>
     </v-card>
     
@@ -141,7 +164,6 @@
 
 <script setup lang="ts">
 import {
-    
     computed,
     ref,
 } from 'vue'
@@ -150,7 +172,6 @@ import {
     useLocalStorage,
 } from '@vueuse/core'
 import ContentCopy from '@/components/ContentCopy.vue'
-
 type Group = {
     id: 'prematch' | 'auton' | 'teleop' | 'endgame';
     header: string;
@@ -166,6 +187,9 @@ type FormField = {
 } & ({
     type: 'str' | 'num';
 } | {
+    type: 'autocomplete';
+    items: string[];
+} | {
     type: 'select';
     options: string[];
 } | {
@@ -180,6 +204,7 @@ type FormField = {
 } | {
     type: 'counter';
     min?: number;
+    max?: number;
 })
 
 const values = useLocalStorage<{
@@ -189,23 +214,23 @@ const values = useLocalStorage<{
 const fields: FormField[] = [
     // {
     //     id: 'name',
-    //     label: 'Your Name',
+    //     label: 'Scouter Name',
     //     type: 'str',
+    //     group: 'prematch',
     // },
-
     {
-        id: 'matchNum',
-        label: 'Match #',
+        id: 'teamNum',
+        label: 'Team Number',
         type: 'num',
-        cols: 6,
         group: 'prematch',
     },
     {
-        id: 'teamNum',
-        label: 'Team #',
-        type: 'num',
-        cols: 6,
+        id: 'matchNum',
+        label: 'Match #',
+        type: 'counter',
         group: 'prematch',
+        min: 1,
+        max: 80,
     },
     {
         id: 'alliance',
@@ -221,16 +246,23 @@ const fields: FormField[] = [
         ],
         group: 'prematch',
     },
+    // {
+    //     id: 'teamNum',
+    //     label: 'Team Number',
+    //     type: 'autocomplete',
+    //     items: teamItems,
+    //     group: 'prematch',
+    // },
     {
         id: 'startingPosition',
         label: 'Amp < --- Starting Position --- > Source',
         type: 'btn-toggle',
         btnOpts: [
-            { value: '1' },
-            { value: '2' },
-            { value: '3' },
-            { value: '4' },
-            { value: '5' },
+            { value: '1', color: 'teal-accent-2' },
+            { value: '2', color: 'teal-accent-2' },
+            { value: '3', color: 'teal-accent-2' },
+            { value: '4', color: 'teal-accent-2' },
+            { value: '5', color: 'teal-accent-2' },
         ],
         group: 'auton',
     },
@@ -238,8 +270,8 @@ const fields: FormField[] = [
         id: 'preloaded',
         label: 'Preloaded',
         type: 'checkbox',
-        trueValue: 'yes',
-        falseValue: 'no',
+        trueValue: '2',
+        falseValue: '1',
         cols: 6,
         group: 'auton',
     },
@@ -247,8 +279,8 @@ const fields: FormField[] = [
         id: 'leftZone',
         label: 'Left Zone',
         type: 'checkbox',
-        trueValue: 'yes',
-        falseValue: 'no',
+        trueValue: '2',
+        falseValue: '1',
         cols: 6,
         group: 'auton',
     },
@@ -288,14 +320,6 @@ const fields: FormField[] = [
         type: 'counter',
         group: 'auton',
     },
-    // {
-    //     id: 'autonBreakdown',
-    //     label: 'Auton Breakdown',
-    //     type: 'checkbox',
-    //     trueValue: 'yes',
-    //     falseValue: 'no',
-    //     group: 'auton',
-    // },
     {
         id: 'teleopAmp',
         label: 'Amp',
@@ -319,17 +343,18 @@ const fields: FormField[] = [
         label: 'Trap',
         type: 'counter',
         group: 'teleop',
+        max: 3,
     },
     {
         id: 'stage',
         label: 'Stage',
         type: 'btn-toggle',
         btnOpts: [
-            { value: 'none', color: 'red' },
-            { value: 'park', color: 'blue' },
-            { value: 'alone', color: 'green' },
-            { value: 'w/1', color: 'green' },
-            { value: 'w/2', color: 'green' },  
+            { value: 'none', color: 'teal-accent-2' },
+            { value: 'park', color: 'teal-accent-2' },
+            { value: 'alone', color: 'teal-accent-2' },
+            { value: 'w/1', color: 'teal-accent-2' },
+            { value: 'w/2', color: 'teal-accent-2' },  
         ],
         group: 'endgame',
     },
@@ -338,10 +363,10 @@ const fields: FormField[] = [
         label: 'Pickup Location',
         type: 'btn-toggle',
         btnOpts: [
-            { value: 'none', color: 'red' },
-            { value: 'floor', color: 'green' },
-            { value: 'source', color: 'green' },
-            { value: 'both', color: 'green' },    
+            { value: 'none', color: 'teal-accent-2' },
+            { value: 'floor', color: 'teal-accent-2' },
+            { value: 'source', color: 'teal-accent-2' },
+            { value: 'both', color: 'teal-accent-2' },    
         ],
         group: 'endgame',
     }, 
@@ -350,10 +375,10 @@ const fields: FormField[] = [
         label: 'Play Style',
         type: 'btn-toggle',
         btnOpts: [
-            { value: 'none', color: 'red' },
-            { value: 'offense', color: 'green' },
-            { value: 'defense', color: 'green' },
-            { value: 'both', color: 'green' },
+            { value: 'none', color: 'teal-accent-2' },
+            { value: 'offense', color: 'teal-accent-2' },
+            { value: 'defense', color: 'teal-accent-2' },
+            { value: 'both', color: 'teal-accent-2' },
         ],
         group: 'endgame',
     },
@@ -362,9 +387,9 @@ const fields: FormField[] = [
         label: 'Teleop Breakdowns',
         type: 'btn-toggle',
         btnOpts: [
-            { value: 'no', color: 'green' },
-            { value: 'half', color: 'blue' },
-            { value: 'yes', color: 'red' },
+            { value: 'no', color: 'teal-accent-2' },
+            { value: 'half', color: 'teal-accent-2' },
+            { value: 'yes', color: 'teal-accent-2' },
         ],
         group: 'endgame',
     },
@@ -405,12 +430,151 @@ for (const field of fields) {
 function applyDefaultValues (v: typeof values) {
     const newValues = { ...values.value } // clone
     for (const field of fields) {
+        
         if (field.type === 'checkbox' && newValues[field.id] === undefined) {
             newValues[field.id] = field.falseValue
         }
         if (field.type === 'counter' && newValues[field.id] === undefined) {
             newValues[field.id] = '0'
         }
+
+        // Error messages
+
+        if(field.id === 'startingPosition' && !newValues[field.id])
+        {
+            newValues[field.id] = 'error'
+        }
+
+        if(field.id === 'teamNum' && !newValues[field.id])
+        {
+            newValues[field.id] = 'error'
+        }
+
+        // Calculating the code here:
+
+        if(field.id === 'teamNum')
+        {
+            newValues[field.id] = newValues[field.id] + '\t'
+        }
+
+        if(field.id === 'matchNum')
+        {
+            if(parseInt(newValues[field.id]) < 1 || !newValues[field.id])
+            {
+                newValues[field.id] = 'error'
+            }
+            else if((newValues[field.id] || '').length < 2)
+            {
+                newValues[field.id] = (newValues[field.id] || '').padStart(2, '0')
+            }
+        }
+
+        if (field.id === 'alliance') {
+            if(newValues[field.id] === 'R1'){
+            newValues[field.id] = '1'
+            }
+            else if(newValues[field.id] === 'R2'){
+            newValues[field.id] = '2'
+            }
+            else if(newValues[field.id] === 'R3'){
+            newValues[field.id] = '3'
+            }
+            else if(newValues[field.id] === 'B1'){
+            newValues[field.id] = '4'
+            }
+            else if(newValues[field.id] === 'B2'){
+            newValues[field.id] = '5'
+            }
+            else if(newValues[field.id] === 'B3'){
+            newValues[field.id] = '6'
+            }
+            else{
+            newValues[field.id] = 'error' 
+            }
+        }
+
+        if (field.id === 'stage') {
+            if(newValues[field.id] === 'none'){
+            newValues[field.id] = '1'
+            }
+            else if(newValues[field.id] === 'park'){
+            newValues[field.id] = '2'
+            }
+            else if(newValues[field.id] === 'alone'){
+            newValues[field.id] = '3'
+            }
+            else if(newValues[field.id] === 'w/1'){
+            newValues[field.id] = '4'
+            }
+            else if(newValues[field.id] === 'w/2'){
+            newValues[field.id] = '5'
+            }
+            else{
+            newValues[field.id] = 'error' 
+            }
+        }
+        
+        if (field.id === 'pickupLocation') {
+            if(newValues[field.id] === 'none'){
+            newValues[field.id] = '1'
+            }
+            else if(newValues[field.id] === 'floor'){
+            newValues[field.id] = '2'
+            }
+            else if(newValues[field.id] === 'source'){
+            newValues[field.id] = '3'
+            }
+            else if(newValues[field.id] === 'both'){
+            newValues[field.id] = '4'
+            }
+            else{
+            newValues[field.id] = 'error' 
+            }
+        }
+
+        if (field.id === 'playStyle') {
+            if(newValues[field.id] === 'none'){
+            newValues[field.id] = '1'
+            }
+            else if(newValues[field.id] === 'offense'){
+            newValues[field.id] = '2'
+            }
+            else if(newValues[field.id] === 'defense'){
+            newValues[field.id] = '3'
+            }
+            else if(newValues[field.id] === 'both'){
+            newValues[field.id] = '4'
+            }
+            else{
+            newValues[field.id] = 'error' 
+            }
+        }
+
+        if (field.id === 'teleopBreakdown') {
+            if(newValues[field.id] === 'no'){
+            newValues[field.id] = '1'
+            }
+            else if(newValues[field.id] === 'half'){
+            newValues[field.id] = '2'
+            }
+            else if(newValues[field.id] === 'yes'){
+            newValues[field.id] = '3'
+            }
+            else{
+            newValues[field.id] = 'error' 
+            }
+        }
+
+        // Adding letters to values that could be double digits
+
+        if (field.id === 'teleopAmp') {
+            newValues[field.id] = 'a' + newValues[field.id] + 'b'
+        }
+
+        if (field.id === 'teleopSpeakerAmp') {
+            newValues[field.id] = 'c' + newValues[field.id] + 'd'
+        }
+
         // if (field.type === 'counter' && Number(newValues[field.id]) < 0) {
         //     newValues[field.id] = '0'
         // }
@@ -421,7 +585,11 @@ function applyDefaultValues (v: typeof values) {
 const debouncedValues = useDebounce(computed(() => applyDefaultValues(values)), 500)
 
 const missingFields = computed(() => {
-    return fields.filter(field => !debouncedValues.value[field.id] && field.allowEmpty !== true);
+    return fields.filter(field => 
+    (debouncedValues.value[field.id] === 'error')
+    ||
+    (debouncedValues.value[field.id] === 'error\t')
+    );
 })
 
 const qrContent = computed(() => {
@@ -431,7 +599,8 @@ const qrContent = computed(() => {
     return fields.map(field => {
         const fieldValue = debouncedValues.value[field.id] || ''
         return fieldValue;
-    }).join('\t')
+    }).join('')
+    // .join('\t') if we want to do tabs
 })
 
 function resetValues () {
@@ -440,6 +609,8 @@ function resetValues () {
             // fields that don't reset
             // name: values.value.name,
             alliance: values.value.alliance,
+            name: values.value.name,
+            matchNum: values.value.matchNum,
         }
     }
 }
