@@ -3,18 +3,18 @@
 
 name: Deploy to Firebase Hosting on merge
 'on':
-  push:
-    branches:
-      - master
+    push:
+        branches:
+            - master
 jobs:
-  build_and_deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: yarn install --immutable && yarn build
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SCOUTING_APP_PROTOTYPE_9BF1F }}'
-          channelId: live
-          projectId: scouting-app-prototype-9bf1f
+    build_and_deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - run: yarn install --immutable && yarn build
+            - uses: FirebaseExtended/action-hosting-deploy@v0
+              with:
+                  repoToken: '${{ secrets.GITHUB_TOKEN }}'
+                  firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SCOUTING_APP_PROTOTYPE_9BF1F }}'
+                  channelId: live
+                  projectId: scouting-app-prototype-9bf1f
