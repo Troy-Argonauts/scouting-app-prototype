@@ -115,12 +115,12 @@
                                 :label="field.label"
                                 :hint="field.hint"
                                 type="number"
-                                min="0"
-
+                                :min="field.min ?? 0"
+                                :max="field.max ?? 99"
                                 append-icon="mdi-plus-circle"
                                 prepend-icon="mdi-minus-circle"
 
-                                @click:append="values[field.id] = String(Math.min(Number(values[field.id] || '0') + 1, field.max ?? 0))"
+                                @click:append="values[field.id] = String(Math.min(Number(values[field.id] || '0') + 1, field.max ?? 99))"
                                 @click:prepend="values[field.id] = String(Math.max(Number(values[field.id] || '0') - 1, field.min ?? 0))"
                             />
                             
@@ -144,7 +144,8 @@
                     v-for="missingField of missingFields"
                     class="ml-2"
                 >
-                    💩 {{ missingField.label }} ({{ missingField.id }})
+                    [💩] {{ missingField.label }}
+                    <!-- ({{ missingField.id }}) -->
                 </li>
             </ul>
         </v-alert>
@@ -203,7 +204,7 @@ type FormField = {
 } | {
     type: 'counter';
     min?: number;
-    max: number;
+    max?: number;
 })
 
 const values = useLocalStorage<{
@@ -293,63 +294,54 @@ const fields: FormField[] = [
         label: 'Amp Scores',
         type: 'counter',
         group: 'auton',
-        max: 99,
     },
     {
         id: 'ampMissAuton',
         label: 'Amp Misses',
         type: 'counter',
         group: 'auton',
-        max: 99,
     },
     {
         id: 'speakerScoreAuton',
         label: 'Speaker Scores',
         type: 'counter',
         group: 'auton',
-        max: 99,
     },
     {
         id: 'speakerMissAuton',
         label: 'Speaker Misses',
         type: 'counter',
         group: 'auton',
-        max: 99,
     },
     {
         id: 'wingPickupAuton',
         label: 'Wing Pickups',
         type: 'counter',
         group: 'auton',
-        max: 99,
     },
     {
         id: 'centerPickupAuton',
         label: 'Center Pickups',
         type: 'counter',
         group: 'auton',
-        max: 99,
     },
     {
         id: 'teleopAmp',
         label: 'Amp',
         type: 'counter',
         group: 'teleop',
-        max: 99,
     },
     {
         id: 'teleopSpeakerNA',
         label: 'Speaker (not amp.)',
         type: 'counter',
         group: 'teleop',
-        max: 99,
     },
     {
         id: 'teleopSpeakerAmp',
         label: 'Speaker (amplified)',
         type: 'counter',
         group: 'teleop',
-        max: 99,
     },
     {
         id: 'teleopTrap',
@@ -598,8 +590,14 @@ function applyDefaultValues (v: typeof values) {
 const debouncedValues = useDebounce(computed(() => applyDefaultValues(values)), 500)
 
 const missingFields = computed(() => {
-    return fields.filter(field => !debouncedValues.value[field.id] && field.allowEmpty !== true);
+    return fields.filter(field => 
+    (debouncedValues.value[field.id] === 'error')
+    ||
+    (debouncedValues.value[field.id] === 'error\t')
+    );
 })
+
+//!debouncedValues.value[field.id] && field.allowEmpty !== true) ||
 
 const qrContent = computed(() => {
     // const valuesIguess = fieldsForValues.value.map(field => values.value[field.id]);
