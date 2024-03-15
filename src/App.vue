@@ -1,11 +1,14 @@
 <template>
     <v-app>
-        <v-main style="background-color: #d8d8d8">
+        <v-main style="background-color: #242740">
             <v-container>
                 <v-row>
                     <v-col style="max-width: 6in" class="mx-auto">
-                        <v-card>
-                            <v-tabs v-model="mode">
+                        <v-card color="black">
+                            <v-tabs
+                                v-model="mode"
+                                color="white"
+                            >
                                 <v-tab value="teams">Teams</v-tab>
                                 <v-tab value="map">Map</v-tab>
                                 <v-tab value="entry">Entry</v-tab>
